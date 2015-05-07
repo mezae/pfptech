@@ -31,3 +31,37 @@ a:hover .header-profile-image {
 	padding-top: 11px !important;
 	padding-bottom: 11px !important;
 }
+
+.navbar {
+	background-color: #9C182F;
+	border-bottom: 1px white solid;
+}
+
+.sidebar {
+	background-color: #C1B4AE;
+	color: white;
+	position: fixed;
+	margin-top: 0;
+	height: 95vh;
+	width:	55px;
+}
+
+.side-con {
+	position: absolute;
+	padding: 10px 15px;
+	margin: auto;
+}
+
+.sb-icon {
+	padding: 14px 1px;
+	font-size: 22px;
+	cursor: pointer;
+}
+
+.content {
+	padding-left: 55px
+}
+
+a {
+	color: white;
+}

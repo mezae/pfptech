@@ -1,0 +1,14 @@
+<div class="sidebar" data-ng-controller="HeaderController" ng-init="editing = false" ng-show="user()">
+		<div class="side-con">
+			<div class="sb-main" ng-show="!editing">
+				<div><i class="sb-icon glyphicon glyphicon-home"></i></div>
+				<div ng-click="editing = true"><i class="sb-icon glyphicon glyphicon-plus"></i></div>
+				<div ng-click="editing = true"><i class="sb-icon glyphicon glyphicon-pencil"></i></div>
+				<div><i class="sb-icon glyphicon glyphicon-book"></i></div>
+			</div>
+			<div class="sb-edit" ng-show="editing">
+				<div ng-click="editing = false"><i class="sb-icon glyphicon glyphicon-ok"></i></div>
+				<div ng-click="editing = false"><i class="sb-icon glyphicon glyphicon-remove"></i></div>
+			</div>
+		</div>
+</div>
