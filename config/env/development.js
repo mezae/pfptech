@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = {
-	db: 'mongodb://localhost/pfptech-dev',
+	db: process.env.MONGOLAB_URI,
 	app: {
 		title: 'pfptech - Development Environment'
 	},

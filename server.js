@@ -3,6 +3,7 @@
 /**
  * Module dependencies.
  */
+require('dotenv').load();
 var config = require('./config/config'),
 	mongoose = require('./config/lib/mongoose'),
 	express = require('./config/lib/express');

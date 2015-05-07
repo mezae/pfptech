@@ -1,13 +1,32 @@
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Articles',
-	function($scope, $stateParams, $location, Authentication, Articles) {
+angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Articles',
+	function($scope, $rootScope, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
+
+		$scope.title = 'title';
+		$scope.content = 'content';
+
+		$scope.$on('clickedSave', function () {
+				$scope.save();
+		});
+
+		$scope.$on('clickedRemove', function () {
+				$scope.remove();
+		});
+
+		$scope.isNewPage = function() {
+			return $location.path() === '/articles/create';
+		};
+
+		$scope.isEditing = function() {
+			return $location.path().indexOf('edit') >= 0;
+		};
 
 		$scope.create = function() {
 			var article = new Articles({
-				title: this.title,
-				content: this.content
+				title: $scope.title,
+				content: $scope.content
 			});
 			article.$save(function(response) {
 				$location.path('articles/' + response._id);
@@ -19,20 +38,20 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 			});
 		};
 
-		$scope.remove = function(article) {
-			if (article) {
-				article.$remove();
-
-				for (var i in $scope.articles) {
-					if ($scope.articles[i] === article) {
-						$scope.articles.splice(i, 1);
-					}
-				}
-			} else {
-				$scope.article.$remove(function() {
-					$location.path('articles');
-				});
+		$scope.save = function() {
+			if ($location.path() === '/articles/create') {
+				$scope.create();
 			}
+			else {
+				$scope.update();
+			}
+		};
+
+		$scope.remove = function() {
+			var article = $scope.article;
+			article.$remove(function() {
+				$location.path('articles');
+			});
 		};
 
 		$scope.update = function() {
@@ -50,9 +69,18 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 		};
 
 		$scope.findOne = function() {
-			$scope.article = Articles.get({
-				articleId: $stateParams.articleId
-			});
+			if($stateParams.articleId) {
+				$scope.article = Articles.get({
+					articleId: $stateParams.articleId
+				});
+			}
+			else{
+				$scope.article = {
+					title: 'title',
+					content: 'content'
+				}
+			}
 		};
+
 	}
 ]);

@@ -65,3 +65,7 @@ a:hover .header-profile-image {
 a {
 	color: white;
 }
+
+.edit-time {
+	display: inline;
+}

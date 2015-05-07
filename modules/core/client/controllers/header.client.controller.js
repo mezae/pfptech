@@ -7,7 +7,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
         $scope.authentication = Authentication;
         $scope.user = function() {
             return $scope.authentication.user;
-        }
+        };
 
         // Get the topbar menu
         $scope.menu = Menus.getMenu('topbar');

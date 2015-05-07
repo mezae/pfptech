@@ -106,7 +106,7 @@ angular.module('articles').config(['$stateProvider',
 		}).
 		state('articles.create', {
 			url: '/create',
-			templateUrl: 'modules/articles/views/create-article.client.view.html'
+			templateUrl: 'modules/articles/views/view-article.client.view.html'
 		}).
 		state('articles.view', {
 			url: '/:articleId',
@@ -114,21 +114,40 @@ angular.module('articles').config(['$stateProvider',
 		}).
 		state('articles.edit', {
 			url: '/:articleId/edit',
-			templateUrl: 'modules/articles/views/edit-article.client.view.html'
+			templateUrl: 'modules/articles/views/view-article.client.view.html'
 		});
 	}
 ]);
 
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Articles',
-	function($scope, $stateParams, $location, Authentication, Articles) {
+angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Articles',
+	function($scope, $rootScope, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
+
+		$scope.title = 'title';
+		$scope.content = 'content';
+
+		$scope.$on('clickedSave', function () {
+				$scope.save();
+		});
+
+		$scope.$on('clickedRemove', function () {
+				$scope.remove();
+		});
+
+		$scope.isNewPage = function() {
+			return $location.path() === '/articles/create';
+		};
+
+		$scope.isEditing = function() {
+			return $location.path().indexOf('edit') >= 0;
+		};
 
 		$scope.create = function() {
 			var article = new Articles({
-				title: this.title,
-				content: this.content
+				title: $scope.title,
+				content: $scope.content
 			});
 			article.$save(function(response) {
 				$location.path('articles/' + response._id);
@@ -140,20 +159,20 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 			});
 		};
 
-		$scope.remove = function(article) {
-			if (article) {
-				article.$remove();
-
-				for (var i in $scope.articles) {
-					if ($scope.articles[i] === article) {
-						$scope.articles.splice(i, 1);
-					}
-				}
-			} else {
-				$scope.article.$remove(function() {
-					$location.path('articles');
-				});
+		$scope.save = function() {
+			if ($location.path() === '/articles/create') {
+				$scope.create();
 			}
+			else {
+				$scope.update();
+			}
+		};
+
+		$scope.remove = function() {
+			var article = $scope.article;
+			article.$remove(function() {
+				$location.path('articles');
+			});
 		};
 
 		$scope.update = function() {
@@ -171,12 +190,69 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 		};
 
 		$scope.findOne = function() {
-			$scope.article = Articles.get({
-				articleId: $stateParams.articleId
-			});
+			if($stateParams.articleId) {
+				$scope.article = Articles.get({
+					articleId: $stateParams.articleId
+				});
+			}
+			else{
+				$scope.article = {
+					title: 'title',
+					content: 'content'
+				}
+			}
 		};
+
 	}
 ]);
+
+'use strict';
+
+angular.module('articles').controller('SidebarController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', 'Authentication', 'Articles',
+	function($scope, $rootScope, $state, $stateParams, $location, Authentication, Articles) {
+		$scope.authentication = Authentication;
+
+		$scope.user = function() {
+			return $scope.authentication.user;
+		};
+
+		$scope.isNewPage = function() {
+			return $location.path() === '/articles/create';
+		};
+
+		$scope.create = function()  {
+			$state.go('articles.create');
+			$scope.editing = true;
+		};
+
+		$scope.edit = function() {
+			$state.go('articles.edit', { articleId: $stateParams.articleId }, { notify: false });
+			$scope.editing = true;
+		};
+
+		$scope.save = function() {
+			$rootScope.$broadcast('clickedSave');
+			$scope.editing = false;
+		};
+
+		$scope.cancel = function() {
+			if ($scope.isNewPage()) {
+				$location.path('/wikiHome');
+			}
+			else {
+				$state.go('articles.view', { articleId: $stateParams.articleId }, { notify: false });
+			}
+			$scope.editing = false;
+		};
+
+		$scope.remove = function()  {
+			$rootScope.$broadcast('clickedRemove');
+			$scope.editing = false;
+		};
+
+	}
+]);
+
 'use strict';
 
 //Articles service used for communicating with the articles REST endpoints
@@ -281,7 +357,7 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
         $scope.authentication = Authentication;
         $scope.user = function() {
             return $scope.authentication.user;
-        }
+        };
 
         // Get the topbar menu
         $scope.menu = Menus.getMenu('topbar');
@@ -298,14 +374,41 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
         });
     }
 ]);
+
 'use strict';
 
-angular.module('core').controller('HomeController', ['$scope', 'Authentication',
-    function($scope, Authentication) {
+angular.module('core').controller('HomeController', ['$scope', 'Authentication', 'Articles',
+    function($scope, $http, Authentication) {
         // This provides Authentication context.
         $scope.authentication = Authentication;
     }
 ]);
+
+'use strict';
+
+// Create the contenteditable directive
+angular.module('core').directive('contenteditable',
+function() {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function(scope, element, attrs, ngModel) {
+
+      function read() {
+        ngModel.$setViewValue(element.html());
+      }
+
+      ngModel.$render = function() {
+        element.html(ngModel.$viewValue || '');
+      };
+
+      element.bind('blur keyup change', function() {
+        scope.$apply(read);
+      });
+    }
+  };
+});
+
 'use strict';
 
 //Menu service used for managing  menus

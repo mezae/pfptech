@@ -1,14 +1,17 @@
-<div class="sidebar" data-ng-controller="HeaderController" ng-init="editing = false" ng-show="user()">
+<div class="sidebar" data-ng-controller="SidebarController" ng-init="editing = false" ng-show="user()">
 		<div class="side-con">
 			<div class="sb-main" ng-show="!editing">
-				<div><i class="sb-icon glyphicon glyphicon-home"></i></div>
-				<div ng-click="editing = true"><i class="sb-icon glyphicon glyphicon-plus"></i></div>
-				<div ng-click="editing = true"><i class="sb-icon glyphicon glyphicon-pencil"></i></div>
-				<div><i class="sb-icon glyphicon glyphicon-book"></i></div>
+				<a href="/wikiHome"><i class="sb-icon glyphicon glyphicon-home"></i></a>
+				<a href="/articles"><i class="sb-icon glyphicon glyphicon-book"></i></a>
+				<a ng-click="create()"><i class="sb-icon glyphicon glyphicon-plus"></i></a>
+				<a ng-click="edit()">
+					<i class="sb-icon glyphicon glyphicon-pencil"></i>
+				</a>
 			</div>
 			<div class="sb-edit" ng-show="editing">
-				<div ng-click="editing = false"><i class="sb-icon glyphicon glyphicon-ok"></i></div>
-				<div ng-click="editing = false"><i class="sb-icon glyphicon glyphicon-remove"></i></div>
+				<div ng-click="save()"><i class="sb-icon glyphicon glyphicon-ok"></i></div>
+				<div ng-click="cancel()"><i class="sb-icon glyphicon glyphicon-remove"></i></div>
+				<div ng-click="remove()" ng-hide="isNewPage()"><i class="sb-icon glyphicon glyphicon-trash"></i></div>
 			</div>
 		</div>
 </div>
