@@ -8,8 +8,12 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 			return $scope.authentication.user;
 		};
 
-		$scope.isNewPage = function() {
-			return $location.path() === '/articles/create';
+		$scope.isAdmin = function() {
+			return $scope.authentication.user.roles === ['admin'];
+		};
+
+		$scope.isActive = function(page) {
+			return $location.path() === page;
 		};
 
 		$scope.create = function()  {
@@ -28,7 +32,7 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 		};
 
 		$scope.cancel = function() {
-			if ($scope.isNewPage()) {
+			if ($scope.isActive('/articles/create')) {
 				$location.path('/wikiHome');
 			}
 			else {

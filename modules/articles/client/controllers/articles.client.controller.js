@@ -1,11 +1,8 @@
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Articles',
-	function($scope, $rootScope, $stateParams, $location, Authentication, Articles) {
+angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Articles', '$sce',
+	function($scope, $rootScope, $stateParams, $location, Authentication, Articles, $sce) {
 		$scope.authentication = Authentication;
-
-		$scope.title = 'title';
-		$scope.content = 'content';
 
 		$scope.$on('clickedSave', function () {
 				$scope.save();
@@ -14,6 +11,11 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		$scope.$on('clickedRemove', function () {
 				$scope.remove();
 		});
+
+		$scope.editorOptions = {
+	    language: 'en',
+	    uiColor: '#FFFFFF'
+	};
 
 		$scope.isNewPage = function() {
 			return $location.path() === '/articles/create';
@@ -24,21 +26,17 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		};
 
 		$scope.create = function() {
-			var article = new Articles({
-				title: $scope.title,
-				content: $scope.content
-			});
+			var article = new Articles($scope.article);
 			article.$save(function(response) {
 				$location.path('articles/' + response._id);
-
-				$scope.title = '';
-				$scope.content = '';
+				$scope.article = response;
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
 		};
 
 		$scope.save = function() {
+			console.log($location.path());
 			if ($location.path() === '/articles/create') {
 				$scope.create();
 			}
@@ -73,12 +71,13 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 				$scope.article = Articles.get({
 					articleId: $stateParams.articleId
 				});
+				$scope.safecontent = $sce.trustAsHtml($scope.article.content);
 			}
 			else{
 				$scope.article = {
 					title: 'title',
 					content: 'content'
-				}
+				};
 			}
 		};
 

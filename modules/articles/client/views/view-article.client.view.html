@@ -11,5 +11,8 @@
 				<div contenteditable="isEditing() || isNewPage()" ng-model="article.subtag">{{article.subtag}}</div>
 		</em>
 	</small>
-	<p class="lead" contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.content">{{article.content}}</p>
+	<div ng-show="isEditing() || isNewPage()">
+		<textarea ckeditor="editorOptions" ng-model="article.content">{{article.content}}</textarea>
+	</div>
+	<p class="lead" ng-bind-html="article.content" ng-hide="isEditing() || isNewPage()"></p>
 </section>

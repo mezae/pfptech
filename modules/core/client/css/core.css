@@ -69,3 +69,7 @@ a {
 .edit-time {
 	display: inline;
 }
+
+.editing {
+	background-color: #F6CA83;
+}
