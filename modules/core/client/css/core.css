@@ -58,10 +58,6 @@ a:hover .header-profile-image {
 	cursor: pointer;
 }
 
-.content {
-	padding-left: 55px
-}
-
 a {
 	color: white;
 }
@@ -72,4 +68,47 @@ a {
 
 .editing {
 	background-color: #F6CA83;
+}
+
+.desaturate {
+	filter: brightness(0) invert(1);
+	-webkit-filter: brightness(0) invert(1);
+	max-height: 30px;
+}
+
+.navbar-brand {
+	padding: 10px 10px;
+}
+
+.landing {
+	max-height: 60px;
+}
+
+.vert-center {
+	padding: 17vh 0;
+}
+
+.hori-center {
+	float: none;
+	margin: auto;
+}
+
+.navbar-right {
+	margin-right: 0;
+}
+
+@media (min-width: 768px) {
+	section {
+		padding-left: 2vw;
+	}
+}
+
+@media (max-width: 768px) {
+	section {
+		padding-left: 55px;
+	}
+}
+
+.article-header {
+	margin-bottom: 5px;
 }

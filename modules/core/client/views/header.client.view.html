@@ -1,4 +1,4 @@
-<div data-ng-controller="HeaderController">
+<div class="navbar navbar-fixed-top" data-ng-controller="HeaderController" ng-hide="!authentication.user">
 	<div class="navbar-header">
 		<button class="navbar-toggle" type="button" data-ng-click="toggleCollapsibleMenu()">
 			<span class="sr-only">Toggle navigation</span>
@@ -6,14 +6,9 @@
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
 		</button>
-		<a data-ui-sref="home" class="navbar-brand">Prep for Prep</a>
+		<a href="" ng-click="redirect('main')" class="navbar-brand"><img class="desaturate img-responsive" src='/modules/core/img/brand/glogo.png'></a>
 	</div>
 	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
-		<ul class="nav navbar-nav navbar-right" data-ng-hide="authentication.user">
-			<li data-ui-sref-active="active">
-				<a data-ui-sref="authentication.signin" target="_self">Sign In</a>
-			</li>
-		</ul>
 		<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
 			<li class="dropdown">
 				<a href="#" class="dropdown-toggle user-header-dropdown-toggle" data-toggle="dropdown">
@@ -22,13 +17,13 @@
 				</a>
 				<ul class="dropdown-menu">
 					<li data-ui-sref-active="active">
-						<a data-ui-sref="settings.profile">Edit Profile</a>
+						<a href="" ng-click="redirect('settings.profile')">Edit Profile</a>
 					</li>
 					<li data-ui-sref-active="active">
-						<a data-ui-sref="settings.picture">Change Profile Picture</a>
+						<a href="" ng-click="redirect('settings.picture')">Change Profile Picture</a>
 					</li>
 					<li data-ui-sref-active="active" data-ng-show="authentication.user.provider === 'local'">
-						<a data-ui-sref="settings.password">Change Password</a>
+						<a href="" ng-click="redirect('settings.password')">Change Password</a>
 					</li>
 					<li class="divider"></li>
 					<li>

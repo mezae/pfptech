@@ -33,13 +33,13 @@
 </head>
 
 <body class="ng-cloak">
-	<header data-ng-include="'/modules/core/views/header.client.view.html'" class="navbar navbar-fixed-top"></header>
+	<header data-ng-include="'/modules/core/views/header.client.view.html'"></header>
 	<div data-ng-include="'/modules/core/views/sidebar.client.view.html'"></div>
-	<section class="content">
-		<section class="container">
+	<div class="content">
+		<div class="container">
 			{% block content %}{% endblock %}
-		</section>
-	</section>
+		</div>
+	</div>
 
 	<!--Embedding The User Object-->
 	<script type="text/javascript">

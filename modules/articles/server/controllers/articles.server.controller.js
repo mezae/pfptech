@@ -42,6 +42,8 @@ exports.update = function(req, res) {
 
 	article.title = req.body.title;
 	article.content = req.body.content;
+	article.tag = req.body.tag;
+	article.subtag = req.body.subtag;
 
 	article.save(function(err) {
 		if (err) {

@@ -1,14 +1,18 @@
 <section data-ng-controller="ArticlesController" data-ng-init="findOne()">
-	<div class="page-header">
-		<h1 contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.title">{{article.title}}</h1>
+	<div class="page-header article-header">
+		<h1 contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.title"></h1>
 	</div>
 	<small>
 		<em class="text-muted">
+			<span>
+				{{article.tag ? '#' : ''}}<span contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.tag"></span>
+				{{article.subtag ? '#' : ''}}<span contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.subtag"></span>
+			</span>
+			<div>
 				<i class="glyphicon glyphicon-time"></i>
-				<div class="edit-time" ng-hide="isEditing() || isNewPage()">last modified by {{article.user.displayName}} on {{authentication.user.created | date: 'mediumDate'}}</div>
-				<div class="edit-time" ng-show="isEditing() || isNewPage()">you are currently editing this page</div>
-				<div contenteditable="isEditing() || isNewPage()" ng-model="article.tag">{{article.tag}}</div>
-				<div contenteditable="isEditing() || isNewPage()" ng-model="article.subtag">{{article.subtag}}</div>
+				<span ng-hide="isEditing() || isNewPage()">last modified by {{article.user.displayName}} on {{authentication.user.created | date: 'mediumDate'}}</span>
+				<span ng-show="isEditing() || isNewPage()">you are currently editing this page</span>
+			</div>
 		</em>
 	</small>
 	<div ng-show="isEditing() || isNewPage()">

@@ -157,7 +157,6 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		};
 
 		$scope.save = function() {
-			console.log($location.path());
 			if ($location.path() === '/articles/create') {
 				$scope.create();
 			}
@@ -211,12 +210,16 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 	function($scope, $rootScope, $state, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
 
+		$scope.$on('pageJump', function () {
+			$scope.editing = false;
+		});
+
 		$scope.user = function() {
 			return $scope.authentication.user;
 		};
 
 		$scope.isAdmin = function() {
-			return $scope.authentication.user.roles === ['admin'];
+			return $scope.authentication.user.roles[0] === 'admin';
 		};
 
 		$scope.isActive = function(page) {
@@ -240,7 +243,7 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 
 		$scope.cancel = function() {
 			if ($scope.isActive('/articles/create')) {
-				$location.path('/wikiHome');
+				$state.go('main');
 			}
 			else {
 				$state.go('articles.view', { articleId: $stateParams.articleId }, { notify: false });
@@ -353,8 +356,8 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 ]);
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', '$state', 'Authentication', 'Menus',
-    function($scope, $state, Authentication, Menus) {
+angular.module('core').controller('HeaderController', ['$rootScope', '$scope', '$state', '$window' , 'Authentication', 'Menus',
+    function($rootScope, $scope, $state, $window, Authentication, Menus) {
         // Expose view variables
         $scope.$state = $state;
         $scope.authentication = Authentication;
@@ -362,8 +365,18 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
             return $scope.authentication.user;
         };
 
-        // Get the topbar menu
-        $scope.menu = Menus.getMenu('topbar');
+        $scope.redirect = function(page) {
+          if ($state.current.name === 'articles.create') {
+            var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
+            if (confirmation) {
+              $rootScope.$broadcast('pageJump');
+              $state.go(page);
+            }
+          }
+          else {
+            $state.go(page);
+          }
+        };
 
         // Toggle the menu items
         $scope.isCollapsed = false;
@@ -380,10 +393,12 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
 
 'use strict';
 
-angular.module('core').controller('HomeController', ['$scope', 'Authentication', 'Articles',
-    function($scope, $http, Authentication) {
+angular.module('core').controller('HomeController', ['$scope', '$state', 'Authentication',
+    function($scope, $state, Authentication) {
         // This provides Authentication context.
         $scope.authentication = Authentication;
+
+        if ($scope.authentication) $state.go('main');
     }
 ]);
 
@@ -750,13 +765,14 @@ angular.module('users').controller('AuthenticationController', ['$scope', '$http
 				$scope.authentication.user = response;
 
 				// And redirect to the index page
-				$location.path('/');
+				$location.path('/wikiHome');
 			}).error(function(response) {
 				$scope.error = response.message;
 			});
 		};
 	}
 ]);
+
 'use strict';
 
 angular.module('users').controller('PasswordController', ['$scope', '$stateParams', '$http', '$location', 'Authentication',

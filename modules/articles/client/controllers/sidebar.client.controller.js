@@ -4,12 +4,16 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 	function($scope, $rootScope, $state, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
 
+		$scope.$on('pageJump', function () {
+			$scope.editing = false;
+		});
+
 		$scope.user = function() {
 			return $scope.authentication.user;
 		};
 
 		$scope.isAdmin = function() {
-			return $scope.authentication.user.roles === ['admin'];
+			return $scope.authentication.user.roles[0] === 'admin';
 		};
 
 		$scope.isActive = function(page) {
@@ -33,7 +37,7 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 
 		$scope.cancel = function() {
 			if ($scope.isActive('/articles/create')) {
-				$location.path('/wikiHome');
+				$state.go('main');
 			}
 			else {
 				$state.go('articles.view', { articleId: $stateParams.articleId }, { notify: false });

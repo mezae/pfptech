@@ -36,7 +36,6 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		};
 
 		$scope.save = function() {
-			console.log($location.path());
 			if ($location.path() === '/articles/create') {
 				$scope.create();
 			}
