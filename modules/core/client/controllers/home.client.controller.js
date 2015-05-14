@@ -5,6 +5,6 @@ angular.module('core').controller('HomeController', ['$scope', '$state', 'Authen
         // This provides Authentication context.
         $scope.authentication = Authentication;
 
-        if ($scope.authentication) $state.go('main');
+        if ($scope.authentication.user) $state.go('main');
     }
 ]);

@@ -4,6 +4,8 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 	function($scope, $rootScope, $stateParams, $location, Authentication, Articles, $sce) {
 		$scope.authentication = Authentication;
 
+		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+
 		$scope.$on('clickedSave', function () {
 				$scope.save();
 		});

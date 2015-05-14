@@ -125,6 +125,8 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 	function($scope, $rootScope, $stateParams, $location, Authentication, Articles, $sce) {
 		$scope.authentication = Authentication;
 
+		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+
 		$scope.$on('clickedSave', function () {
 				$scope.save();
 		});
@@ -398,7 +400,7 @@ angular.module('core').controller('HomeController', ['$scope', '$state', 'Authen
         // This provides Authentication context.
         $scope.authentication = Authentication;
 
-        if ($scope.authentication) $state.go('main');
+        if ($scope.authentication.user) $state.go('main');
     }
 ]);
 

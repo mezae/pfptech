@@ -25,6 +25,9 @@ var ArticleSchema = new Schema({
 		default: '',
 		trim: true
 	},
+	department: {
+		type: String
+	},
 	tag: {
 		type: String,
 		default: ''

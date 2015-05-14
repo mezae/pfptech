@@ -4,9 +4,25 @@
 	</div>
 	<small>
 		<em class="text-muted">
-			<span>
-				{{article.tag ? '#' : ''}}<span contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.tag"></span>
-				{{article.subtag ? '#' : ''}}<span contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.subtag"></span>
+			<span ng-hide="isEditing() || isNewPage()">
+				{{article.tag ? '#' : ''}}<span>{{article.tag}}</span>
+				{{article.subtag ? '#' : ''}}<span>{{article.subtag}}</span>
+			</span>
+			<span ng-show="isEditing() || isNewPage()">
+				<select class="form-control" ng-model="article.department">
+					<option value="">department</option>
+					<option ng-repeat="dept in departments" value="{{dept}}">{{dept}}</option>
+				</select>
+				<select class="form-control" ng-model="article.tag">
+					<option value="Tech Training">Tech Training</option>
+					<option value="FileMaker">FileMaker</option>
+				</select>
+				<select class="form-control" ng-model="article.subtag">
+					<option value="Keystone">Keystone</option>
+					<option value="Microsoft Excel 2010">Microsoft Excel 2010</option>
+					<option value="Google Calendar">Google Calendar</option>
+					<option value="Wiki Help">Wiki Help</option>
+				</select>
 			</span>
 			<div>
 				<i class="glyphicon glyphicon-time"></i>

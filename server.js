@@ -4,7 +4,6 @@
  * Module dependencies.
  */
 require('dotenv').load();
-console.log(process.env);
 var config = require('./config/config'),
 	mongoose = require('./config/lib/mongoose'),
 	express = require('./config/lib/express');
