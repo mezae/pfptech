@@ -13,7 +13,9 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 		};
 
 		$scope.isAdmin = function() {
-			return $scope.authentication.user.roles[0] === 'admin';
+			if ($scope.authentication.user) {
+				return $scope.authentication.user.roles[0] === 'admin';
+			}
 		};
 
 		$scope.isActive = function(page) {

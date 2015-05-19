@@ -1,22 +1,23 @@
+<div class="home"></div>
 <div data-ng-controller="AuthenticationController">
 	<div class="hori-center vert-center text-center col-md-4 col-sm-6 col-xs-10">
+		<img class="img-responsive landing center-block" src='/modules/core/img/brand/glogo.png'></a>
 		<form data-ng-submit="signin()" class="signin form-horizontal" autocomplete="off">
 			<fieldset>
 				<div class="form-group">
 					<label for="username" class="sr-only">Username</label>
-					<input type="text" id="username" name="username" class="form-control"
+					<input type="text" id="username" name="username" class="form-control form-look text-center"
 						   data-ng-model="credentials.username" placeholder="username">
-				</div>
-				<div class="form-group">
+
 					<label for="password" class="sr-only">Password</label>
-					<input type="password" id="password" name="password" class="form-control"
+					<input type="password" id="password" name="password" class="form-control form-look text-center"
 						   data-ng-model="credentials.password" placeholder="password">
 				</div>
 				<div class="text-center form-group">
-					<button type="submit" class="btn btn-primary">Sign in</button>
+					<button type="submit" class="ebtn btn-login">Login</button>
 				</div>
 				<div class="forgot-password">
-					<a data-ui-sref="password.forgot">Forgot your password?</a>
+					<a data-ui-sref="password.forgot" class="btn btn-link">forgot your password?</a>
 				</div>
 				<div data-ng-show="error" class="text-center text-danger">
 					<strong data-ng-bind="error"></strong>

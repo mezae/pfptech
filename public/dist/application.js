@@ -221,7 +221,9 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 		};
 
 		$scope.isAdmin = function() {
-			return $scope.authentication.user.roles[0] === 'admin';
+			if ($scope.authentication.user) {
+				return $scope.authentication.user.roles[0] === 'admin';
+			}
 		};
 
 		$scope.isActive = function(page) {
@@ -646,6 +648,21 @@ angular.module('core').service('Socket', ['Authentication', '$state', '$timeout'
             }
         };
     }
+]);
+
+'use strict';
+
+//Articles service used for communicating with the articles REST endpoints
+angular.module('tags').factory('Tags', ['$resource',
+	function($resource) {
+		return $resource('api/tags/:tagId', {
+			tagId: '@_id'
+		}, {
+			update: {
+				method: 'PUT'
+			}
+		});
+	}
 ]);
 
 'use strict';

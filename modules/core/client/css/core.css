@@ -1,3 +1,62 @@
+.home{
+  background: url(group-pic.jpg);
+  background-repeat: repeat;
+  background-size: cover;
+  position: absolute;
+  overflow: hidden;
+  opacity: 0.6;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.landing-text {
+	color: black;
+}
+
+.ebtn {
+  display: inline-block;
+  padding: 4px 20px;
+  margin-bottom: 0;
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 2;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: black;
+  border-color: black;
+  background-color: white;
+}
+
+.btn-login {
+  color: #9C182F;
+  border-color: #9C182F;
+}
+
+.btn-login:hover, .btn-login:focus {
+  text-decoration: none;
+  background-color: #9C182F;
+  color: white;
+}
+
+.form-look {
+	border-width: 0 0 1px 0;
+	margin-top: 5px;
+}
+
 .content {
 	margin-top: 50px;
 }
@@ -85,7 +144,7 @@ a {
 }
 
 .vert-center {
-	padding: 17vh 0;
+	padding: 10vh 0;
 }
 
 .hori-center {
