@@ -3,8 +3,7 @@
 /**
  * Module dependencies.
  */
-var articlesPolicy = require('../policies/tags.server.policy'),
-	tags = require('../controllers/tags.server.controller');
+var tags = require('../controllers/tags.server.controller');
 
 module.exports = function(app) {
 	// Articles collection routes

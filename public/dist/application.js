@@ -60,6 +60,11 @@ ApplicationConfiguration.registerModule('core');
 'use strict';
 
 // Use Applicaion configuration module to register a new module
+ApplicationConfiguration.registerModule('tags');
+
+'use strict';
+
+// Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('users');
 
 'use strict';
@@ -121,8 +126,8 @@ angular.module('articles').config(['$stateProvider',
 
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Articles', '$sce',
-	function($scope, $rootScope, $stateParams, $location, Authentication, Articles, $sce) {
+angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$window', '$filter', '$stateParams', '$location', 'Authentication', 'Articles', 'Tags', '$sce',
+	function($scope, $rootScope, $window, $filter, $stateParams, $location, Authentication, Articles, Tags, $sce) {
 		$scope.authentication = Authentication;
 
 		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
@@ -138,7 +143,7 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		$scope.editorOptions = {
 	    language: 'en',
 	    uiColor: '#FFFFFF'
-	};
+		};
 
 		$scope.isNewPage = function() {
 			return $location.path() === '/articles/create';
@@ -168,10 +173,13 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		};
 
 		$scope.remove = function() {
-			var article = $scope.article;
-			article.$remove(function() {
-				$location.path('articles');
-			});
+			var confirmation = $window.prompt('Type DELETE to remove this article forever.');
+			if (confirmation === 'DELETE') {
+				var article = $scope.article;
+				article.$remove(function() {
+					$location.path('articles');
+				});
+			}
 		};
 
 		$scope.update = function() {
@@ -185,10 +193,16 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		};
 
 		$scope.find = function() {
-			$scope.articles = Articles.query();
+			Articles.query(function(articles) {
+				$scope.articles = _.groupBy(articles, 'department');
+			});
+
+			$scope.tags = Tags.query();
+
 		};
 
 		$scope.findOne = function() {
+			$scope.tags = Tags.query();
 			if($stateParams.articleId) {
 				$scope.article = Articles.get({
 					articleId: $stateParams.articleId
@@ -648,6 +662,107 @@ angular.module('core').service('Socket', ['Authentication', '$state', '$timeout'
             }
         };
     }
+]);
+
+'use strict';
+
+// Setting up route
+angular.module('tags').config(['$stateProvider',
+	function($stateProvider) {
+		// Articles state routing
+		$stateProvider.
+		state('tags', {
+			abstract: true,
+			url: '/tags',
+			template: '<ui-view/>'
+		}).
+		state('tags.list', {
+			url: '',
+			templateUrl: 'modules/tags/views/list-tags.client.view.html'
+		}).
+		state('tags.create', {
+			url: '/create',
+			templateUrl: 'modules/tags/views/view-tag.client.view.html'
+		}).
+		state('tags.view', {
+			url: '/:tagId',
+			templateUrl: 'modules/tags/views/view-tag.client.view.html'
+		}).
+		state('tags.edit', {
+			url: '/:tagId/edit',
+			templateUrl: 'modules/tags/views/view-tag.client.view.html'
+		});
+	}
+]);
+
+'use strict';
+
+angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Tags',
+	function($scope, $rootScope, $stateParams, $location, Authentication, Tags) {
+		$scope.authentication = Authentication;
+
+		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+
+		$scope.isNewPage = function() {
+			return $location.path() === '/tags/create';
+		};
+
+		$scope.isEditing = function() {
+			return $location.path().indexOf('edit') >= 0;
+		};
+
+		$scope.create = function() {
+			var tag = new Tags($scope.tag);
+			tag.$save(function(response) {
+				$scope.tag = response;
+				$location.path('/tags');
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		$scope.save = function() {
+			if ($location.path() === '/tags/create') {
+				$scope.create();
+			}
+			else {
+				$scope.update();
+			}
+		};
+
+		$scope.remove = function() {
+			var tag = $scope.tag;
+			tag.$remove(function() {
+				$location.path('tags');
+			});
+		};
+
+		$scope.update = function() {
+			var tag = $scope.tag;
+
+			tag.$update(function() {
+				$location.path('tags/' + tag._id);
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
+		};
+
+		$scope.find = function() {
+			$scope.tags = Tags.query();
+		};
+
+		$scope.findOne = function() {
+			if($stateParams.tagId) {
+				$scope.tag = Tags.get({
+					tagId: $stateParams.tagId
+				});
+			}
+			else{
+				$scope.tag = {};
+			}
+		};
+
+	}
 ]);
 
 'use strict';

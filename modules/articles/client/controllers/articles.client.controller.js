@@ -1,7 +1,7 @@
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Articles', '$sce',
-	function($scope, $rootScope, $stateParams, $location, Authentication, Articles, $sce) {
+angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$window', '$filter', '$stateParams', '$location', 'Authentication', 'Articles', 'Tags', '$sce',
+	function($scope, $rootScope, $window, $filter, $stateParams, $location, Authentication, Articles, Tags, $sce) {
 		$scope.authentication = Authentication;
 
 		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
@@ -17,7 +17,7 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		$scope.editorOptions = {
 	    language: 'en',
 	    uiColor: '#FFFFFF'
-	};
+		};
 
 		$scope.isNewPage = function() {
 			return $location.path() === '/articles/create';
@@ -47,10 +47,13 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		};
 
 		$scope.remove = function() {
-			var article = $scope.article;
-			article.$remove(function() {
-				$location.path('articles');
-			});
+			var confirmation = $window.prompt('Type DELETE to remove this article forever.');
+			if (confirmation === 'DELETE') {
+				var article = $scope.article;
+				article.$remove(function() {
+					$location.path('articles');
+				});
+			}
 		};
 
 		$scope.update = function() {
@@ -64,10 +67,16 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		};
 
 		$scope.find = function() {
-			$scope.articles = Articles.query();
+			Articles.query(function(articles) {
+				$scope.articles = _.groupBy(articles, 'department');
+			});
+
+			$scope.tags = Tags.query();
+
 		};
 
 		$scope.findOne = function() {
+			$scope.tags = Tags.query();
 			if($stateParams.articleId) {
 				$scope.article = Articles.get({
 					articleId: $stateParams.articleId
