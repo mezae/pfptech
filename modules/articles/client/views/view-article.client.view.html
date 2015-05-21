@@ -14,24 +14,34 @@
 					<option value="">department</option>
 					<option ng-repeat="dept in departments" value="{{dept}}">{{dept}}</option>
 				</select>
-				<select class="form-control" ng-model="article.tag">
+
+				<select class="form-control" ng-model="article.tag" ng-show="article.tag !== 'new'">
 					<option value="">tag</option>
 					<option ng-repeat="tag in tags" ng-if="tag.type === 'tag'" value="{{tag.name}}">{{tag.name}}</option>
+					<option value="new">add new tag</option>
 				</select>
-				<select class="form-control" ng-model="article.subtag">
+				<input type="text" class="form-control" ng-model="newtag.name" ng-if="article.tag === 'new'">
+				<button class="btn btn-link" ng-click="article.tag = ''" ng-if="article.tag === 'new'"><i class="glyphicon glyphicon-remove"></i></button>
+				<button class="btn btn-link" ng-click="createTag('tag')" ng-if="article.tag === 'new'"><i class="glyphicon glyphicon-ok"></i></button>
+
+				<select class="form-control" ng-model="article.subtag" ng-show="article.subtag !== 'new'">
 					<option value="">subtag</option>
 					<option ng-repeat="tag in tags" ng-if="tag.type === 'subtag'" value="{{tag.name}}">{{tag.name}}</option>
-
+					<option value="new">add new subtag</option>
 				</select>
+				<input type="text" class="form-control" ng-model="newtag.name" ng-if="article.subtag === 'new'">
+				<button class="btn btn-link" ng-click="article.subtag = ''" ng-if="article.subtag === 'new'"><i class="glyphicon glyphicon-remove"></i></button>
+				<button class="btn btn-link" ng-click="createTag('subtag')" ng-if="article.subtag === 'new'"><i class="glyphicon glyphicon-ok"></i></button>
+
 			</form>
 			<div>
 				<i class="glyphicon glyphicon-time"></i>
-				<span ng-hide="isEditing() || isNewPage()">last modified by {{article.user.displayName}} on {{authentication.user.created | date: 'mediumDate'}}</span>
+				<span ng-hide="isEditing() || isNewPage()">last modified by {{article.user.displayName}} on {{article.updated | date: 'mediumDate'}}</span>
 				<span ng-show="isEditing() || isNewPage()">you are currently editing this page</span>
 			</div>
 		</em>
 	</small>
-	<div ng-show="isEditing() || isNewPage()">
+	<div ng-if="isEditing() || isNewPage()">
 		<textarea ckeditor="editorOptions" ng-model="article.content">{{article.content}}</textarea>
 	</div>
 	<p class="lead" ng-bind-html="article.content" ng-hide="isEditing() || isNewPage()"></p>

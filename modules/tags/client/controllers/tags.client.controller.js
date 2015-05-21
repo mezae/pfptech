@@ -17,8 +17,7 @@ angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$s
 		$scope.create = function() {
 			var tag = new Tags($scope.tag);
 			tag.$save(function(response) {
-				$scope.tag = response;
-				$location.path('/tags');
+				$scope.tag = null;
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});

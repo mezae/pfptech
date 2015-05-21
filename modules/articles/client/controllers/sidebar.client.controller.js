@@ -4,6 +4,10 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 	function($scope, $rootScope, $state, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
 
+		$rootScope.$on('$stateChangeSuccess', function() {
+			$scope.editing = $state.current.name === 'articles.create' || $state.current.name === 'articles.edit';
+		});
+
 		$scope.$on('pageJump', function () {
 			$scope.editing = false;
 		});

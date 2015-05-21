@@ -14,6 +14,10 @@ var ArticleSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
+	updated: {
+		type: Date,
+		default: null
+	},
 	title: {
 		type: String,
 		default: '',

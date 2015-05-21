@@ -14,11 +14,6 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 				$scope.remove();
 		});
 
-		$scope.editorOptions = {
-	    language: 'en',
-	    uiColor: '#FFFFFF'
-		};
-
 		$scope.isNewPage = function() {
 			return $location.path() === '/articles/create';
 		};
@@ -30,8 +25,8 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 		$scope.create = function() {
 			var article = new Articles($scope.article);
 			article.$save(function(response) {
-				$location.path('articles/' + response._id);
 				$scope.article = response;
+				$location.path('articles/' + response._id);
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
@@ -70,13 +65,16 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 			Articles.query(function(articles) {
 				$scope.articles = _.groupBy(articles, 'department');
 			});
-
 			$scope.tags = Tags.query();
-
 		};
 
 		$scope.findOne = function() {
 			$scope.tags = Tags.query();
+			$scope.newtag = {name: '', type: ''};
+			$scope.editorOptions = {
+		    language: 'en',
+		    uiColor: '#FFFFFF'
+			};
 			if($stateParams.articleId) {
 				$scope.article = Articles.get({
 					articleId: $stateParams.articleId
@@ -86,9 +84,21 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 			else{
 				$scope.article = {
 					title: 'title',
-					content: 'content'
+					content: 'content',
+					tag: ''
 				};
 			}
+		};
+
+		$scope.createTag = function(type) {
+			$scope.newtag.type = type;
+			var tag = new Tags($scope.newtag);
+			tag.$save(function(response) {
+				$scope.tags.push(response);
+				$scope.newtag = null;
+			}, function(errorResponse) {
+				$scope.error = errorResponse.data.message;
+			});
 		};
 
 	}

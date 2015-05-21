@@ -45,6 +45,8 @@ exports.update = function(req, res) {
 	article.department = req.body.department;
 	article.tag = req.body.tag;
 	article.subtag = req.body.subtag;
+	article.updated = Date.now();
+	article.user = req.user._id;
 
 	article.save(function(err) {
 		if (err) {
@@ -78,7 +80,7 @@ exports.delete = function(req, res) {
  * List of Articles
  */
 exports.list = function(req, res) {
-	Article.find().sort('-created').populate('user', 'displayName').exec(function(err, articles) {
+	Article.find({}, '-__v -created -updated -content -user').exec(function(err, articles) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -93,7 +95,7 @@ exports.list = function(req, res) {
  * Article middleware
  */
 exports.articleByID = function(req, res, next, id) {
-	Article.findById(id).populate('user', 'displayName').exec(function(err, article) {
+	Article.findById(id, '-created').populate('user', 'displayName').exec(function(err, article) {
 		if (err) return next(err);
 		if (!article) return next(new Error('Failed to load article ' + id));
 		req.article = article;

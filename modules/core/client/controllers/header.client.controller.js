@@ -10,7 +10,7 @@ angular.module('core').controller('HeaderController', ['$rootScope', '$scope', '
         };
 
         $scope.redirect = function(page) {
-          if ($state.current.name === 'articles.create') {
+          if ($state.current.name === 'articles.create' || $state.current.name === 'articles.edit') {
             var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
             if (confirmation) {
               $rootScope.$broadcast('pageJump');

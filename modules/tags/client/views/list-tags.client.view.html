@@ -2,11 +2,44 @@
 	<div class="page-header">
 		<h1>Tags</h1>
 	</div>
-	<div class="list-group">
-		<a data-ng-repeat="tag in tags" data-ui-sref="tags.view({tagId: tag._id})" class="list-group-item">
+
+	<div class="col-md-6">
+
+		<div data-ng-repeat="tag in tags | filter: {type: 'tag'}:true" class="list-group-item">
 			<h4 class="list-group-item-heading" data-ng-bind="tag.name"></h4>
-		</a>
+		</div>
+		<div class="list-group-item" ng-click="tag.type = 'tag'" ng-hide="tag.type">
+			<h4 class="list-group-item-heading">Click here to add a new tag</h4>
+		</div>
+		<div class="list-group-item" ng-show="tag.type">
+			<form class="form-inline">
+				<input type="text" class="form-control form-look input-lg" data-ng-model="tag.name"></h4>
+				<div class="pull-right">
+					<button class="ebtn btn-login" ng-click="tag.type = null"><i class="glyphicon glyphicon-remove"></i></button>
+					<button class="ebtn btn-login" ng-click="create()"><i class="glyphicon glyphicon-ok"></i></button>
+				</div>
+			</form>
+		</div>
+
 	</div>
+
+	<div class="col-md-6">
+		<div data-ng-repeat="tag in tags | filter: {type: 'subtag'}:true" class="list-group-item">
+			<h4 class="list-group-item-heading" data-ng-bind="tag.name"></h4>
+		</div>
+		<div class="list-group-item" ng-click="tag.type = 'subtag'" ng-hide="tag.type === 'subtag'">
+			<h4 class="list-group-item-heading">Click here to add a new subtag</h4>
+		</div>
+		<div class="list-group-item" ng-show="tag.type === 'subtag'">
+			<form class="form-inline">
+				<input type="text" class="form-control form-look input-lg" data-ng-model="tag.name"></h4>
+				<div class="pull-right">
+					<button class="ebtn btn-login" ng-click="tag.type = null"><i class="glyphicon glyphicon-remove"></i></button>
+					<button class="ebtn btn-login" ng-click="create()"><i class="glyphicon glyphicon-ok"></i></button>
+				</div>
+			</form>
+	</div>
+
 	<div class="alert alert-warning text-center" data-ng-if="tags.$resolved && !tags.length">
 		No tags yet, why don't you <a data-ui-sref="tags.create">create one</a>?
 	</div>
