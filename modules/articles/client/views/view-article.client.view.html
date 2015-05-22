@@ -1,4 +1,4 @@
-<section data-ng-controller="ArticlesController" data-ng-init="findOne()">
+<section data-ng-controller="ArticleController" data-ng-init="findOne()">
 	<div class="page-header article-header">
 		<h1 contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.title"></h1>
 	</div>
@@ -10,7 +10,7 @@
 			</span>
 			<form class="form-inline" ng-show="isEditing() || isNewPage()">
 
-				<select class="form-control" ng-model="article.department">
+				<select class="form-control" ng-model="article.department" required>
 					<option value="">department</option>
 					<option ng-repeat="dept in departments" value="{{dept}}">{{dept}}</option>
 				</select>

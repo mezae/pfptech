@@ -69,32 +69,6 @@ ApplicationConfiguration.registerModule('users');
 
 'use strict';
 
-// Configuring the Articles module
-angular.module('articles').run(['Menus',
-	function(Menus) {
-		// Add the articles dropdown item
-		Menus.addMenuItem('topbar', {
-			title: 'Articles',
-			state: 'articles',
-			type: 'dropdown'
-		});
-
-		// Add the dropdown list item
-		Menus.addSubMenuItem('topbar', 'articles', {
-			title: 'List Articles',
-			state: 'articles.list'
-		});
-
-		// Add the dropdown create item
-		Menus.addSubMenuItem('topbar', 'articles', {
-			title: 'Create Articles',
-			state: 'articles.create'
-		});
-	}
-]);
-
-'use strict';
-
 // Setting up route
 angular.module('articles').config(['$stateProvider',
 	function($stateProvider) {
@@ -126,8 +100,8 @@ angular.module('articles').config(['$stateProvider',
 
 'use strict';
 
-angular.module('articles').controller('ArticlesController', ['$scope', '$rootScope', '$window', '$filter', '$stateParams', '$location', 'Authentication', 'Articles', 'Tags', '$sce',
-	function($scope, $rootScope, $window, $filter, $stateParams, $location, Authentication, Articles, Tags, $sce) {
+angular.module('articles').controller('ArticleController', ['$scope', '$rootScope', '$window', '$stateParams', '$location', 'Authentication', 'Articles', 'Tags', '$sce',
+	function($scope, $rootScope, $window, $stateParams, $location, Authentication, Articles, Tags, $sce) {
 		$scope.authentication = Authentication;
 
 		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
@@ -187,13 +161,6 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 			});
 		};
 
-		$scope.find = function() {
-			Articles.query(function(articles) {
-				$scope.articles = _.groupBy(articles, 'department');
-			});
-			$scope.tags = Tags.query();
-		};
-
 		$scope.findOne = function() {
 			$scope.tags = Tags.query();
 			$scope.newtag = {name: '', type: ''};
@@ -225,6 +192,30 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$rootSco
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
+		};
+
+	}
+]);
+
+'use strict';
+/* global _: false */
+
+angular.module('articles').controller('ArticlesController', ['$scope', '$state', 'Authentication', 'Articles', 'Tags',
+	function($scope, $state, Authentication, Articles, Tags) {
+
+		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling',
+			'Executive Office', 'External Affairs', 'Finance and Administration',
+			'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+
+		$scope.find = function() {
+			if (Authentication.user) {
+				Articles.query(function(articles) {
+					$scope.articles = _.groupBy(articles, 'department');
+					$scope.tags = Tags.query();
+				});
+			} else {
+				$state.go('home');
+			}
 		};
 
 	}
@@ -711,9 +702,13 @@ angular.module('tags').config(['$stateProvider',
 
 'use strict';
 
-angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$stateParams', '$location', 'Authentication', 'Tags',
-	function($scope, $rootScope, $stateParams, $location, Authentication, Tags) {
+angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', 'Authentication', 'Tags',
+	function($scope, $rootScope, $state, $stateParams, $location, Authentication, Tags) {
 		$scope.authentication = Authentication;
+
+		function isUnauthorized() {
+			return $scope.authentication.user.roles[0] === 'user';
+		}
 
 		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
 
@@ -743,10 +738,10 @@ angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$s
 			}
 		};
 
-		$scope.remove = function() {
-			var tag = $scope.tag;
-			tag.$remove(function() {
-				$location.path('tags');
+		$scope.removeTag = function(selected) {
+			console.log(selected);
+			selected.$remove(function() {
+				console.log('tag removed');
 			});
 		};
 
@@ -761,17 +756,10 @@ angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$s
 		};
 
 		$scope.find = function() {
-			$scope.tags = Tags.query();
-		};
-
-		$scope.findOne = function() {
-			if($stateParams.tagId) {
-				$scope.tag = Tags.get({
-					tagId: $stateParams.tagId
-				});
-			}
-			else{
-				$scope.tag = {};
+			if (isUnauthorized()) {
+				$state.go('main');
+			} else {
+				$scope.tags = Tags.query();
 			}
 		};
 

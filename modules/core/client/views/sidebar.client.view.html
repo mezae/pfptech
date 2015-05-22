@@ -3,8 +3,9 @@
 			<div class="sb-main" ng-show="!editing">
 				<a href="/wikiHome"><i class="sb-icon glyphicon glyphicon-home"></i></a>
 				<a href="/articles"><i class="sb-icon glyphicon glyphicon-book"></i></a>
+				<a href="/tags" ng-hide="!isAdmin()"><i class="sb-icon glyphicon glyphicon-tags"></i></a>
 				<a ng-click="create()"><i class="sb-icon glyphicon glyphicon-plus"></i></a>
-				<a ng-click="edit()" ng-hide="(isActive('/wikiHome') && !isAdmin()) || isActive('/articles')">
+				<a ng-click="edit()" ng-hide="(isActive('/wikiHome') && !isAdmin()) || isActive('/articles') || isActive('/tags')">
 					<i class="sb-icon glyphicon glyphicon-pencil"></i>
 				</a>
 			</div>
