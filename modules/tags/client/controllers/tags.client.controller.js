@@ -8,7 +8,14 @@ angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$s
 			return $scope.authentication.user.roles[0] === 'user';
 		}
 
-		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+		$scope.find = function() {
+			if (isUnauthorized()) {
+				$state.go('main');
+			} else {
+				$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+				$scope.tags = Tags.query();
+			}
+		};
 
 		$scope.isNewPage = function() {
 			return $location.path() === '/tags/create';
@@ -51,14 +58,6 @@ angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$s
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
-		};
-
-		$scope.find = function() {
-			if (isUnauthorized()) {
-				$state.go('main');
-			} else {
-				$scope.tags = Tags.query();
-			}
 		};
 
 	}

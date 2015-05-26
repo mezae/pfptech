@@ -5,14 +5,18 @@
 				<a href="/articles"><i class="sb-icon glyphicon glyphicon-book"></i></a>
 				<a href="/tags" ng-hide="!isAdmin()"><i class="sb-icon glyphicon glyphicon-tags"></i></a>
 				<a ng-click="create()"><i class="sb-icon glyphicon glyphicon-plus"></i></a>
-				<a ng-click="edit()" ng-hide="(isActive('/wikiHome') && !isAdmin()) || isActive('/articles') || isActive('/tags')">
+				<a ng-click="edit()" ng-hide="isActive('/wikiHome') || isActive('/articles') || isActive('/tags') || isActive('/settings/profile')">
 					<i class="sb-icon glyphicon glyphicon-pencil"></i>
 				</a>
 			</div>
 			<div class="sb-edit" ng-show="editing">
-				<div ng-click="save()"><i class="sb-icon glyphicon glyphicon-ok"></i></div>
-				<div ng-click="cancel()"><i class="sb-icon glyphicon glyphicon-remove"></i></div>
-				<div ng-click="remove()" ng-hide="isActive('/articles/create') || !isAdmin()"><i class="sb-icon glyphicon glyphicon-trash"></i></div>
+				<a href="" ng-click="save()"><i class="sb-icon glyphicon glyphicon-ok"></i></a>
+				<a href="" ng-click="cancel()"><i class="sb-icon glyphicon glyphicon-remove"></i></a>
+				<a href="" ng-click="remove()" ng-hide="isActive('/articles/create') || !isAdmin()"><i class="sb-icon glyphicon glyphicon-trash"></i></a>
 			</div>
+		</div>
+		<div class="sb-bottom">
+			<a href="" ng-click="redirect('settings.profile')"><i class="sb-icon glyphicon glyphicon-cog"></i></a>
+			<a href="/api/auth/signout" target="_self"><i class="sb-icon glyphicon glyphicon-log-out"></i></a>
 		</div>
 </div>

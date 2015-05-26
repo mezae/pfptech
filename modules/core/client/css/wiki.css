@@ -1,0 +1,22 @@
+.article-header {
+	margin-bottom: 5px;
+}
+
+.edit-time {
+	display: inline;
+}
+
+button {
+  padding: 7px 10px;
+}
+
+.list-group-item {
+  min-height: 40px;
+  position: relative;
+}
+
+.rm-tag {
+  position: absolute;
+  top: 2px;
+  right: 5px;
+}

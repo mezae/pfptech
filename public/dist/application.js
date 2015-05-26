@@ -123,13 +123,17 @@ angular.module('articles').controller('ArticleController', ['$scope', '$rootScop
 		};
 
 		$scope.create = function() {
-			var article = new Articles($scope.article);
-			article.$save(function(response) {
-				$scope.article = response;
-				$location.path('articles/' + response._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+			if(this.articleTags.$valid) {
+				var article = new Articles($scope.article);
+				article.$save(function(response) {
+					$scope.article = response;
+					$location.path('articles/' + response._id);
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
+			} else {
+				alert('Please tag this article.');
+			}
 		};
 
 		$scope.save = function() {
@@ -223,8 +227,8 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$state',
 
 'use strict';
 
-angular.module('articles').controller('SidebarController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', 'Authentication', 'Articles',
-	function($scope, $rootScope, $state, $stateParams, $location, Authentication, Articles) {
+angular.module('articles').controller('SidebarController', ['$scope', '$rootScope', '$window', '$state', '$stateParams', '$location', 'Authentication', 'Articles',
+	function($scope, $rootScope, $window, $state, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
 
 		$rootScope.$on('$stateChangeSuccess', function() {
@@ -234,6 +238,19 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 		$scope.$on('pageJump', function () {
 			$scope.editing = false;
 		});
+
+		$scope.redirect = function(page) {
+			if ($state.current.name === 'articles.create' || $state.current.name === 'articles.edit') {
+				var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
+				if (confirmation) {
+					$scope.editing = false;
+					$state.go(page);
+				}
+			}
+			else {
+				$state.go(page);
+			}
+		};
 
 		$scope.user = function() {
 			return $scope.authentication.user;
@@ -261,7 +278,9 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 
 		$scope.save = function() {
 			$rootScope.$broadcast('clickedSave');
-			$scope.editing = false;
+			$scope.$on('$stateChangeSuccess', function() {
+				$scope.editing = false;
+			});
 		};
 
 		$scope.cancel = function() {
@@ -400,17 +419,6 @@ angular.module('core').controller('HeaderController', ['$rootScope', '$scope', '
             $state.go(page);
           }
         };
-
-        // Toggle the menu items
-        $scope.isCollapsed = false;
-        $scope.toggleCollapsibleMenu = function() {
-            $scope.isCollapsed = !$scope.isCollapsed;
-        };
-
-        // Collapsing the menu after navigation
-        $scope.$on('$stateChangeSuccess', function() {
-            $scope.isCollapsed = false;
-        });
     }
 ]);
 
@@ -710,7 +718,14 @@ angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$s
 			return $scope.authentication.user.roles[0] === 'user';
 		}
 
-		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+		$scope.find = function() {
+			if (isUnauthorized()) {
+				$state.go('main');
+			} else {
+				$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+				$scope.tags = Tags.query();
+			}
+		};
 
 		$scope.isNewPage = function() {
 			return $location.path() === '/tags/create';
@@ -753,14 +768,6 @@ angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$s
 			}, function(errorResponse) {
 				$scope.error = errorResponse.data.message;
 			});
-		};
-
-		$scope.find = function() {
-			if (isUnauthorized()) {
-				$state.go('main');
-			} else {
-				$scope.tags = Tags.query();
-			}
 		};
 
 	}

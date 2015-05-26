@@ -8,14 +8,14 @@
 				{{article.tag ? '#' : ''}}<span>{{article.tag}}</span>
 				{{article.subtag ? '#' : ''}}<span>{{article.subtag}}</span>
 			</span>
-			<form class="form-inline" ng-show="isEditing() || isNewPage()">
+			<form class="form-inline" name="articleTags" ng-show="isEditing() || isNewPage()">
 
 				<select class="form-control" ng-model="article.department" required>
 					<option value="">department</option>
 					<option ng-repeat="dept in departments" value="{{dept}}">{{dept}}</option>
 				</select>
 
-				<select class="form-control" ng-model="article.tag" ng-show="article.tag !== 'new'">
+				<select class="form-control" ng-model="article.tag" ng-show="article.tag !== 'new'" ng-disabled="articleTags.$invalid">
 					<option value="">tag</option>
 					<option ng-repeat="tag in tags" ng-if="tag.type === 'tag'" value="{{tag.name}}">{{tag.name}}</option>
 					<option value="new">add new tag</option>
@@ -24,7 +24,7 @@
 				<button class="btn btn-link" ng-click="article.tag = ''" ng-if="article.tag === 'new'"><i class="glyphicon glyphicon-remove"></i></button>
 				<button class="btn btn-link" ng-click="createTag('tag')" ng-if="article.tag === 'new'"><i class="glyphicon glyphicon-ok"></i></button>
 
-				<select class="form-control" ng-model="article.subtag" ng-show="article.subtag !== 'new'">
+				<select class="form-control" ng-model="article.subtag" ng-show="article.subtag !== 'new'" ng-disabled="articleTags.$invalid">
 					<option value="">subtag</option>
 					<option ng-repeat="tag in tags" ng-if="tag.type === 'subtag'" value="{{tag.name}}">{{tag.name}}</option>
 					<option value="new">add new subtag</option>

@@ -23,13 +23,17 @@ angular.module('articles').controller('ArticleController', ['$scope', '$rootScop
 		};
 
 		$scope.create = function() {
-			var article = new Articles($scope.article);
-			article.$save(function(response) {
-				$scope.article = response;
-				$location.path('articles/' + response._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
+			if(this.articleTags.$valid) {
+				var article = new Articles($scope.article);
+				article.$save(function(response) {
+					$scope.article = response;
+					$location.path('articles/' + response._id);
+				}, function(errorResponse) {
+					$scope.error = errorResponse.data.message;
+				});
+			} else {
+				alert('Please tag this article.');
+			}
 		};
 
 		$scope.save = function() {

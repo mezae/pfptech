@@ -1,0 +1,38 @@
+.sidebar {
+	background-color: #C1B4AE;
+	position: fixed;
+	margin-top: 0;
+	height: 95vh;
+	width:	55px;
+}
+
+.side-con {
+	position: absolute;
+	padding: 10px 15px;
+	margin: auto;
+}
+
+.sb-icon {
+	padding: 14px 1px;
+	font-size: 22px;
+	cursor: pointer;
+}
+
+.sidebar a {
+  color: white;
+}
+
+.sidebar a:active, .sidebar a:hover, .sidebar a:focus {
+  color: #9C182F;
+}
+
+.editing {
+	background-color: #F6CA83;
+}
+
+.sb-bottom {
+	position: absolute;
+	padding: 10px 15px;
+	margin: auto;
+	bottom: 10px;
+}

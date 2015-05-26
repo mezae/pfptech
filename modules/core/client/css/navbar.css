@@ -1,0 +1,22 @@
+.navbar {
+	background-color: #9C182F;
+	border-bottom: 1px white solid;
+}
+
+.navbar-brand {
+	padding: 10px 10px;
+}
+
+.desaturate {
+	filter: brightness(0) invert(1);
+	-webkit-filter: brightness(0) invert(1);
+	max-height: 30px;
+}
+
+.navbar-nav > li > a {
+  color: white;
+}
+
+.navbar-right {
+	margin-right: 0;
+}
