@@ -4,19 +4,14 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 	function($scope, $rootScope, $window, $state, $stateParams, $location, Authentication, Articles) {
 		$scope.authentication = Authentication;
 
-		$rootScope.$on('$stateChangeSuccess', function() {
-			$scope.editing = $state.current.name === 'articles.create' || $state.current.name === 'articles.edit';
-		});
-
-		$scope.$on('pageJump', function () {
-			$scope.editing = false;
+		$scope.$on('$stateChangeSuccess', function() {
+			$scope.editing = ['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1;
 		});
 
 		$scope.redirect = function(page) {
-			if ($state.current.name === 'articles.create' || $state.current.name === 'articles.edit') {
+			if (['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1) {
 				var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
 				if (confirmation) {
-					$scope.editing = false;
 					$state.go(page);
 				}
 			}
@@ -41,34 +36,31 @@ angular.module('articles').controller('SidebarController', ['$scope', '$rootScop
 
 		$scope.create = function()  {
 			$state.go('articles.create');
-			$scope.editing = true;
 		};
 
 		$scope.edit = function() {
-			$state.go('articles.edit', { articleId: $stateParams.articleId }, { notify: false });
-			$scope.editing = true;
+			if ($state.current.name === 'main') {
+				$state.go('main.edit', {}, { reload: false, notify: true });
+			} else {
+				$state.go('articles.edit', { articleId: $stateParams.articleId }, { reload: false, notify: true });
+			}
 		};
 
 		$scope.save = function() {
 			$rootScope.$broadcast('clickedSave');
-			$scope.$on('$stateChangeSuccess', function() {
-				$scope.editing = false;
-			});
 		};
 
 		$scope.cancel = function() {
-			if ($scope.isActive('/articles/create')) {
+			if (['main.edit', 'articles.create'].indexOf($state.current.name) > -1) {
 				$state.go('main');
 			}
 			else {
-				$state.go('articles.view', { articleId: $stateParams.articleId }, { notify: false });
+				$state.go('articles.view', { articleId: $stateParams.articleId }, { reload: false, notify: true });
 			}
-			$scope.editing = false;
 		};
 
 		$scope.remove = function()  {
 			$rootScope.$broadcast('clickedRemove');
-			$scope.editing = false;
 		};
 
 	}

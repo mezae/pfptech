@@ -15,7 +15,7 @@ var _ = require('lodash'),
  */
 exports.signup = function(req, res) {
 	// For security measurement we remove the roles from the req.body object
-	delete req.body.roles;
+	if (req.user.roles[0] !== 'admin') delete req.body.roles;
 
 	// Init Variables
 	var user = new User(req.body);
@@ -24,8 +24,9 @@ exports.signup = function(req, res) {
 	// Add missing user fields
 	user.provider = 'local';
 	user.displayName = user.firstName + ' ' + user.lastName;
+	user.password = process.env.USER_PW;
 
-	// Then save the user 
+	// Then save the user
 	user.save(function(err) {
 		if (err) {
 			return res.status(400).send({
@@ -36,13 +37,7 @@ exports.signup = function(req, res) {
 			user.password = undefined;
 			user.salt = undefined;
 
-			req.login(user, function(err) {
-				if (err) {
-					res.status(400).send(err);
-				} else {
-					res.json(user);
-				}
-			});
+			res.json(user);
 		}
 	});
 };

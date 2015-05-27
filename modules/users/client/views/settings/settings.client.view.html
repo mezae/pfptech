@@ -1,30 +1,33 @@
-<section data-ng-controller="SettingsController">
+<div data-ng-controller="SettingsController">
 	<div class="page-header">
 		<h2>Settings</h2>
 	</div>
-	<div class="row">
-			<a href="/settings/profile" class="col-md-2" >
-				<div class="settings-box">
-					<i class="fa fa-user fa-2x"></i>
-					<p>Profile</p>
+	<div class="hori-center">
+		<div class="row">
+				<div class="col-xs-6 col-sm-4 col-md-2">
+					<div ui-sref="settings.profile" class="settings-box">
+						<i class="fa fa-user fa-2x"></i>
+						<p>Profile</p>
+					</div>
 				</div>
-			</a>
-			<a href="/settings/password" class="col-md-2">
-				<div class="settings-box">
-					<i class="fa fa-key fa-2x"></i>
-					<p>Password</p>
+				<div class="col-xs-6 col-sm-4 col-md-2">
+					<div ui-sref="settings.password" class="settings-box">
+						<i class="fa fa-key fa-2x"></i>
+						<p>Password</p>
+					</div>
 				</div>
-			</a>
-			<a class="col-md-2">
-				<div class="settings-box">
-					<i class="fa fa-users fa-2x"></i>
-					<p>Users</p>
+				<div class="col-xs-6 col-sm-4 col-md-2">
+					<div ui-sref="settings.users" class="settings-box">
+						<i class="fa fa-users fa-2x"></i>
+						<p>Users</p>
+					</div>
 				</div>
-			</a>
+	</div>
+</div>
 	</div>
 	<div class="row">
 		<div class="col-md-12">
 			<div data-ui-view></div>
 		</div>
 	</div>
-</section>
+</div>

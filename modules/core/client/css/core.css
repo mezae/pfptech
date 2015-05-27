@@ -37,11 +37,13 @@
 .form-control {
   font-size: 16px;
   -webkit-box-shadow: none;
+  -moz-box-shadow: none;
   box-shadow: none;
 }
 
 .form-control:focus {
   -webkit-box-shadow: none;
+  -moz-box-shadow: none;
   box-shadow: none;
 }
 
@@ -90,14 +92,6 @@ a:hover .header-profile-image {
 	padding-bottom: 11px !important;
 }
 
-@media (min-width: 768px) {
-	section {
-		padding-left: 2vw;
-	}
-}
-
-@media (max-width: 768px) {
-	section {
-		padding-left: 55px;
-	}
+.container {
+  margin-left: 55px;
 }

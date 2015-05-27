@@ -18,6 +18,10 @@ angular.module('users').config(['$stateProvider',
             url: '/password',
             templateUrl: 'modules/users/views/settings/change-password.client.view.html'
         }).
+        state('settings.users', {
+            url: '/users',
+            templateUrl: 'modules/users/views/settings/manage-users.client.view.html'
+        }).
         state('settings.picture', {
             url: '/picture',
             templateUrl: 'modules/users/views/settings/change-profile-picture.client.view.html'

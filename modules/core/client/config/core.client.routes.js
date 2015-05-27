@@ -14,7 +14,11 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
         }).
         state('main', {
             url: '/wikiHome',
-            templateUrl: 'modules/core/views/main.client.view.html'
+            templateUrl: 'modules/articles/views/main.client.view.html'
+        }).
+        state('main.edit', {
+            url: '/edit',
+            templateUrl: 'modules/articles/views/main.client.view.html'
         });
     }
 ]);

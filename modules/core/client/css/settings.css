@@ -1,0 +1,16 @@
+.table > tbody > tr > td {
+  padding: 10px 8px;
+  vertical-align: middle;
+}
+
+.hover-btn {
+  min-height: 40px;
+  position: relative;
+  min-width: 82px;
+}
+
+.edit-user {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
