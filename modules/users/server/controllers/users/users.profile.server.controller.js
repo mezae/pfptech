@@ -12,7 +12,7 @@ var _ = require('lodash'),
 	User = mongoose.model('User');
 
 exports.index = function(req, res) {
-	User.find({}, 'username firstName lastName displayName email roles').exec(function(err, users) {
+	User.find({}, 'username firstName lastName displayName email roles groups').exec(function(err, users) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -31,13 +31,10 @@ exports.read = function(req, res) {
  * Update user details
  */
 exports.update = function (req, res) {
-	console.log(req.user);
-	console.log(req.body);
 	if (req.user) {
 		User.findById(req.body._id).exec(function(err, profile) {
 			var user = profile;
 
-			console.log(user);
 			// Merge existing user
 			user = _.extend(user, req.body);
 			user.updated = Date.now();
@@ -68,6 +65,19 @@ exports.update = function (req, res) {
 			message: 'User is not signed in'
 		});
 	}
+};
+
+exports.delete = function(req, res, id) {
+	var user = req.profile;
+	user.remove(function(err) {
+		if (err) {
+			return res.status(400).send({
+				message: errorHandler.getErrorMessage(err)
+			});
+		} else {
+			res.json(user);
+		}
+	});
 };
 
 /**

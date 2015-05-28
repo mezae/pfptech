@@ -3,7 +3,7 @@
     <div class="table-responsive">
       <table class="table">
         <thead>
-          <th>
+          <th ng-if="user.roles[0] !== 'user'">
             Username
           </th>
           <th>
@@ -15,10 +15,13 @@
           <th>
             Role
           </th>
+					<th>
+            Groups
+          </th>
         </thead>
         <tbody>
-          <tr ng-repeat="member in staff | orderBy: 'roles[0]'" ng-mouseenter="turn = true" ng-mouseleave="turn = false">
-            <td>
+          <tr ng-repeat="member in staff | orderBy: 'roles[0]'" ng-click="editUser(member, $index)">
+            <td ng-if="user.roles[0] !== 'user'">
               {{member.username}}
             </td>
             <td>
@@ -27,8 +30,11 @@
             <td>
               {{member.email}}
             </td>
-            <td class="hover-btn">
-              {{member.roles[0]}} <button class="edit-user btn-link" ng-if="turn" ng-click="editUser(member, $index)"><i class="glyphicon glyphicon-pencil"></i></button>
+            <td>
+              {{member.roles[0]}}
+            </td>
+						<td>
+              {{member.groups}}
             </td>
           </tr>
         </tbody>
@@ -59,7 +65,7 @@
 				</div>
         <div class="form-group">
 					<label for="role">Role</label>
-					<select id="role" name="username" class="form-control form-look" data-ng-model="newUser.roles[0]">
+					<select id="role" name="role" class="form-control form-look" data-ng-model="newUser.roles[0]">
             <option value="" disabled>select user role</option>
             <option value="admin">admin</option>
             <option value="user">user</option>
@@ -67,7 +73,7 @@
 				</div>
         <div class="inline">
           <div class="text-center pull-left">
-  					<button type="reset" class="ebtn btn-login" ng-click="cancel()">Cancel</button>
+  					<button type="button" class="ebtn btn-login" ng-click="removeUser()">Delete Profile</button>
   				</div>
   				<div class="text-center pull-right form-group">
   					<button type="submit" class="ebtn btn-login">Save Profile</button>

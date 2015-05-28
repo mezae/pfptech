@@ -1152,8 +1152,8 @@ angular.module('users').controller('EditProfileController', ['$scope', '$http', 
 
 'use strict';
 
-angular.module('users').controller('ManageUsersController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('ManageUsersController', ['$scope', '$http', '$window', 'Users', 'Authentication',
+	function($scope, $http, $window, Users, Authentication) {
 		$scope.user = Authentication.user;
 
     $scope.findUsers = function() {
@@ -1187,6 +1187,24 @@ angular.module('users').controller('ManageUsersController', ['$scope', '$http', 
       $scope.userIndex = index;
       $scope.addNewUser = true;
     };
+
+		$scope.removeUser = function() {
+			var confirmation = $window.prompt('Type DELETE to remove ' + $scope.newUser.displayName + '\'s account.');
+			if (confirmation === 'DELETE') {
+				$http.delete('/api/users/' + $scope.newUser._id).success(function(response) {
+					$scope.staff.splice($scope.userIndex, 1);
+					$scope.addNewUser = false;
+				}).error(function(response) {
+					$scope.error = response.message;
+				});
+				// nuser.$remove(function() {
+				// 	$scope.staff.splice($scope.userIndex, 1);
+				// 	$scope.addNewUser = false;
+				// }, function(response) {
+				// 	$scope.error = response.data.message;
+				// });
+			}
+		};
 
     $scope.cancel = function() {
       $scope.newUser = null;
