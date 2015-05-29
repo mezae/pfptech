@@ -80,7 +80,7 @@ exports.delete = function(req, res) {
  * List of Articles
  */
 exports.list = function(req, res) {
-	Article.find({}, '-__v -created -updated -content -user').exec(function(err, articles) {
+	Article.find({}, '-__v -created -updated -content -user').lean().exec(function(err, articles) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
@@ -96,7 +96,7 @@ exports.list = function(req, res) {
  */
 exports.articleByID = function(req, res, next, id) {
 	if (id === 'Home') {
-		Article.findOne({department: 'Home'}).exec(function(err, article) {
+		Article.findOne({department: 'Home'}, 'title content department user').exec(function(err, article) {
 			if (err) return next(err);
 			if (!article) return next(new Error('Failed to load article ' + id));
 			req.article = article;

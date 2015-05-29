@@ -74,7 +74,7 @@ exports.delete = function(req, res) {
  * List of Articles
  */
 exports.list = function(req, res) {
-	Tag.find(req.query).exec(function(err, tags) {
+	Tag.find(req.query, '-__v -created').exec(function(err, tags) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)

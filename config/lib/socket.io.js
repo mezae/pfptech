@@ -2,12 +2,12 @@
 
 // Load the module dependencies
 var config = require('../config'),
-	path = require('path'),
+		path = require('path'),
     cookieParser = require('cookie-parser'),
     passport = require('passport'),
     socketio = require('socket.io'),
-	session = require('express-session'),
-	MongoStore = require('connect-mongo')(session),
+		session = require('express-session'),
+		MongoStore = require('connect-mongo')(session),
     http = require('http');
 
 // Define the Socket.io configuration method

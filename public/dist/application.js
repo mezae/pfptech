@@ -1183,9 +1183,11 @@ angular.module('users').controller('ManageUsersController', ['$scope', '$http', 
 		};
 
     $scope.editUser = function(user, index) {
-      $scope.newUser = user;
-      $scope.userIndex = index;
-      $scope.addNewUser = true;
+			if ($scope.user.roles[0] === 'admin') {
+	      $scope.newUser = user;
+	      $scope.userIndex = index;
+	      $scope.addNewUser = true;
+			}
     };
 
 		$scope.removeUser = function() {
@@ -1193,7 +1195,7 @@ angular.module('users').controller('ManageUsersController', ['$scope', '$http', 
 			if (confirmation === 'DELETE') {
 				$http.delete('/api/users/' + $scope.newUser._id).success(function(response) {
 					$scope.staff.splice($scope.userIndex, 1);
-					$scope.addNewUser = false;
+					$scope.cancel();
 				}).error(function(response) {
 					$scope.error = response.message;
 				});
@@ -1207,8 +1209,7 @@ angular.module('users').controller('ManageUsersController', ['$scope', '$http', 
 		};
 
     $scope.cancel = function() {
-      $scope.newUser = null;
-      $scope.userIndex = null;
+      $scope.newUser = $scope.userIndex = null;
       $scope.addNewUser = false;
     };
 
@@ -1220,7 +1221,7 @@ angular.module('users').controller('ManageUsersController', ['$scope', '$http', 
 				user.$update(function(response) {
           $scope.staff.splice($scope.userIndex, 1);
           $scope.staff.push(response);
-					$scope.addNewUser = false;
+					$scope.cancel();
 				}, function(response) {
 					$scope.error = response.data.message;
 				});
