@@ -51,11 +51,6 @@ ApplicationConfiguration.registerModule('articles');
 'use strict';
 
 // Use Applicaion configuration module to register a new module
-ApplicationConfiguration.registerModule('chat');
-
-'use strict';
-
-// Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('core');
 'use strict';
 
@@ -100,167 +95,181 @@ angular.module('articles').config(['$stateProvider',
 
 'use strict';
 
-angular.module('articles').controller('ArticleController', ['$scope', '$rootScope', '$window', '$stateParams', '$location', 'Authentication', 'Articles', 'Tags', '$sce',
-	function($scope, $rootScope, $window, $stateParams, $location, Authentication, Articles, Tags, $sce) {
-		$scope.authentication = Authentication;
+angular.module('articles').controller('ArticleController', ['$scope', '$state', '$window', '$stateParams', 'Authentication', 'Articles', 'Tags', '$sce',
+    function($scope, $state, $window, $stateParams, Authentication, Articles, Tags, $sce) {
+        $scope.authentication = Authentication;
 
-		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+        $scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
 
-		$scope.$on('clickedSave', function () {
-				$scope.save();
-		});
+        //when user clicks the check mark on sidebar
+        $scope.$on('clickedSave', function() {
+            if ($state.current.name === 'articles.create') {
+                create();
+            } else {
+                update();
+            }
+        });
 
-		$scope.$on('clickedRemove', function () {
-				$scope.remove();
-		});
+        //when user clicks the x on sidebar
+        $scope.$on('clickedRemove', function() {
+            remove();
+        });
 
-		$scope.isNewPage = function() {
-			return $location.path() === '/articles/create';
-		};
+        //helps browser know what to show as user jumps to/from editing mode
+        $scope.$on('$stateChangeSuccess', function() {
+            $scope.editing = ['articles.create', 'articles.edit'].indexOf($state.current.name) > -1;
+        });
 
-		$scope.isEditing = function() {
-			return $location.path().indexOf('edit') >= 0;
-		};
+        //requests tags and article data from database
+        $scope.findOne = function() {
+            $scope.tags = Tags.query();
+            $scope.newtag = {
+                name: '',
+                type: ''
+            };
+            $scope.editorOptions = {
+                language: 'en',
+                uiColor: '#FFFFFF'
+            };
+            if ($stateParams.articleId) {
+                $scope.article = Articles.get({
+                    articleId: $stateParams.articleId
+                });
+                $scope.safecontent = $sce.trustAsHtml($scope.article.content);
+            } else {
+                $scope.article = {
+                    title: 'title',
+                    content: 'content',
+                    tag: ''
+                };
+            }
+        };
 
-		$scope.create = function() {
-			if(this.articleTags.$valid) {
-				var article = new Articles($scope.article);
-				article.$save(function(response) {
-					$scope.article = response;
-					$location.path('articles/' + response._id);
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
-			} else {
-				alert('Please tag this article.');
-			}
-		};
+        //creates a new article if it has been properly tagged
+        function create() {
+            if ($scope.articleTags.$valid) {
+                var article = new Articles($scope.article);
+                article.$save(function(response) {
+                    $scope.article = response;
+                    $state.go('articles.view', {
+                        articleId: article._id
+                    });
+                }, function(errorResponse) {
+                    $scope.error = errorResponse.data.message;
+                });
+            } else {
+                alert('Please tag this article.');
+            }
+        }
 
-		$scope.save = function() {
-			if ($location.path() === '/articles/create') {
-				$scope.create();
-			}
-			else {
-				$scope.update();
-			}
-		};
+        //deletes the current article
+        function remove() {
+            var confirmation = $window.prompt('Type DELETE to wipe this article out of existence.');
+            if (confirmation === 'DELETE') {
+                var article = $scope.article;
+                article.$remove(function() {
+                    $state.go('articles.list');
+                });
+            }
+        }
 
-		$scope.remove = function() {
-			var confirmation = $window.prompt('Type DELETE to remove this article forever.');
-			if (confirmation === 'DELETE') {
-				var article = $scope.article;
-				article.$remove(function() {
-					$location.path('articles');
-				});
-			}
-		};
+        //saves changes to the current article
+        function update() {
+            var article = $scope.article;
+            article.$update(function() {
+                $state.go('articles.view', {
+                    articleId: article._id
+                }, {
+                    reload: false,
+                    notify: true
+                });
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        }
 
-		$scope.update = function() {
-			var article = $scope.article;
+        //allows all users to create new tags on the spot
+        $scope.createTag = function(type) {
+            $scope.newtag.type = type;
+            var tag = new Tags($scope.newtag);
+            tag.$save(function(response) {
+                $scope.tags.push(response);
+                $scope.article[$scope.newtag.type] = response.name;
+                $scope.newtag = null;
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
 
-			article.$update(function() {
-				$location.path('articles/' + article._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.findOne = function() {
-			$scope.tags = Tags.query();
-			$scope.newtag = {name: '', type: ''};
-			$scope.editorOptions = {
-		    language: 'en',
-		    uiColor: '#FFFFFF'
-			};
-			if($stateParams.articleId) {
-				$scope.article = Articles.get({
-					articleId: $stateParams.articleId
-				});
-				$scope.safecontent = $sce.trustAsHtml($scope.article.content);
-			}
-			else{
-				$scope.article = {
-					title: 'title',
-					content: 'content',
-					tag: ''
-				};
-			}
-		};
-
-		$scope.createTag = function(type) {
-			$scope.newtag.type = type;
-			var tag = new Tags($scope.newtag);
-			tag.$save(function(response) {
-				$scope.tags.push(response);
-				$scope.newtag = null;
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-	}
+    }
 ]);
-
 'use strict';
 /* global _: false */
 
 angular.module('articles').controller('ArticlesController', ['$scope', '$state', 'Authentication', 'Articles', 'Tags',
-	function($scope, $state, Authentication, Articles, Tags) {
+    function($scope, $state, Authentication, Articles, Tags) {
 
-		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling',
-			'Executive Office', 'External Affairs', 'Finance and Administration',
-			'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+        $scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
 
-		$scope.find = function() {
-			if (Authentication.user) {
-				Articles.query(function(articles) {
-					$scope.articles = _.groupBy(articles, 'department');
-					$scope.tags = Tags.query();
-				});
-			} else {
-				$state.go('home');
-			}
-		};
-	}
+        //request all articles and all tags from database
+        $scope.find = function() {
+            if (Authentication.user) {
+                Articles.query(function(articles) {
+                    $scope.articles = _.groupBy(articles, 'department');
+                    $scope.tags = Tags.query();
+                });
+            } else {
+                $state.go('home');
+            }
+        };
+    }
 ]);
-
 'use strict';
 
 angular.module('articles').controller('WikiHomeController', ['$scope', '$state', 'Authentication', 'Articles', '$sce',
-	function($scope, $state, Authentication, Articles, $sce) {
-		$scope.authentication = Authentication;
+    function($scope, $state, Authentication, Articles, $sce) {
+        $scope.authentication = Authentication;
 
-		$scope.$on('clickedSave', function () {
-				$scope.save();
-		});
+        //when user clicks the check mark on sidebar
+        $scope.$on('clickedSave', function() {
+            $scope.save();
+        });
 
-		$scope.$on('$stateChangeSuccess', function() {
-			$scope.editing = $state.current.name === 'main.edit';
-		});
+        //helps browser know what to show as user jumps to/from editing mode
+        $scope.$on('$stateChangeSuccess', function() {
+            $scope.editing = $state.current.name === 'main.edit';
+        });
 
-    $scope.findHome = function() {
-			$scope.editorOptions = {
-		    language: 'en',
-		    uiColor: '#FFFFFF'
-			};
-			$scope.article = Articles.get({
-				articleId: 'Home'
-			});
-			$scope.safecontent = $sce.trustAsHtml($scope.article.content);
-		};
 
-		$scope.save = function() {
-			var article = $scope.article;
-			article.$update(function() {
-				$state.go('main', {}, { reload: false, notify: true });
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
+        //request wikiHome article from database
+        $scope.findHome = function() {
+            Articles.get({
+                articleId: 'Home'
+            }, function(post) {
+                $scope.article = post;
+                $scope.safecontent = $sce.trustAsHtml($scope.article.content);
+                $scope.editorOptions = {
+                    language: 'en',
+                    uiColor: '#FFFFFF'
+                };
+            });
+        };
 
-	}
+        //allows admin to update the content on the wikiHome page
+        $scope.save = function() {
+            var article = $scope.article;
+            article.$update(function() {
+                $state.go('main', {}, {
+                    reload: false,
+                    notify: true
+                });
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
+
+    }
 ]);
-
 'use strict';
 
 //Articles service used for communicating with the articles REST endpoints
@@ -275,66 +284,6 @@ angular.module('articles').factory('Articles', ['$resource',
 		});
 	}
 ]);
-
-'use strict';
-
-// Configuring the Chat module
-angular.module('chat').run(['Menus',
-	function(Menus) {
-		// Set top bar menu items
-		Menus.addMenuItem('topbar', {
-			title: 'Chat',
-			state: 'chat'
-		});
-	}
-]);
-
-'use strict';
-
-// Configure the 'chat' module routes
-angular.module('chat').config(['$stateProvider',
-	function($stateProvider) {
-		$stateProvider.
-		state('chat', {
-			url: '/chat',
-			templateUrl: 'modules/chat/views/chat.client.view.html'
-		});
-	}
-]);
-'use strict';
-
-// Create the 'chat' controller
-angular.module('chat').controller('ChatController', ['$scope', 'Socket',
-    function($scope, Socket) {
-    	// Create a messages array
-        $scope.messages = [];
-        
-        // Add an event listener to the 'chatMessage' event
-        Socket.on('chatMessage', function(message) {
-            $scope.messages.unshift(message);
-        });
-        
-        // Create a controller method for sending messages
-        $scope.sendMessage = function() {
-        	// Create a new message object
-            var message = {
-                text: this.messageText
-            };
-            
-            // Emit a 'chatMessage' message event
-            Socket.emit('chatMessage', message);
-            
-            // Clear the message text
-            this.messageText = '';
-        };
-
-        // Remove the event listener when the controller instance is destroyed
-        $scope.$on('$destroy', function() {
-            Socket.removeListener('chatMessage');
-        });
-
-    }
-]); 
 
 'use strict';
 
@@ -363,24 +312,23 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 
 'use strict';
 
-angular.module('core').controller('HeaderController', ['$scope', '$state', '$window' , 'Authentication',
+angular.module('core').controller('HeaderController', ['$scope', '$state', '$window', 'Authentication',
     function($scope, $state, $window, Authentication) {
         $scope.authentication = Authentication;
 
+        //when logo is clicked, redirect user to wikiHome, but only after making sure that user has saved his/her work
         $scope.redirect = function(page) {
-          if (['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1) {
-            var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
-            if (confirmation) {
-              $state.go(page);
+            if (['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1) {
+                var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
+                if (confirmation) {
+                    $state.go(page);
+                }
+            } else {
+                $state.go(page);
             }
-          }
-          else {
-            $state.go(page);
-          }
         };
     }
 ]);
-
 'use strict';
 
 angular.module('core').controller('HomeController', ['$scope', '$state', 'Authentication',
@@ -395,71 +343,77 @@ angular.module('core').controller('HomeController', ['$scope', '$state', 'Authen
 'use strict';
 
 angular.module('articles').controller('SidebarController', ['$scope', '$rootScope', '$window', '$state', '$stateParams', '$location', 'Authentication', 'Articles',
-	function($scope, $rootScope, $window, $state, $stateParams, $location, Authentication, Articles) {
-		$scope.authentication = Authentication;
+    function($scope, $rootScope, $window, $state, $stateParams, $location, Authentication, Articles) {
+        $scope.authentication = Authentication;
 
-		$scope.$on('$stateChangeSuccess', function() {
-			$scope.editing = ['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1;
-		});
+        //helps browser know what to show as user jumps to/from editing mode
+        $scope.$on('$stateChangeSuccess', function() {
+            $scope.editing = ['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1;
+        });
 
-		$scope.redirect = function(page) {
-			if (['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1) {
-				var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
-				if (confirmation) {
-					$state.go(page);
-				}
-			}
-			else {
-				$state.go(page);
-			}
-		};
+        //redirect user to new page, but only after making sure that user has saved his/her work
+        $scope.redirect = function(page) {
+            if (['main.edit', 'articles.create', 'articles.edit'].indexOf($state.current.name) > -1) {
+                var confirmation = $window.confirm('Are you sure you want to leave this page without saving?');
+                if (confirmation) {
+                    $state.go(page);
+                }
+            } else {
+                $state.go(page);
+            }
+        };
 
-		$scope.user = function() {
-			return $scope.authentication.user;
-		};
+        $scope.user = function() {
+            return $scope.authentication.user;
+        };
 
-		$scope.isAdmin = function() {
-			if ($scope.authentication.user) {
-				return $scope.authentication.user.roles[0] === 'admin';
-			}
-		};
+        $scope.isAdmin = function() {
+            return $scope.authentication.user.roles[0] === 'admin';
+        };
 
-		$scope.isActive = function(page) {
-			return $location.path() === page;
-		};
+        $scope.isActive = function(page) {
+            return $state.current.name === page;
+        };
 
-		$scope.create = function()  {
-			$state.go('articles.create');
-		};
+        $scope.edit = function() {
+            if ($state.current.name === 'main') {
+                $state.go('main.edit', {}, {
+                    reload: false,
+                    notify: true
+                });
+            } else {
+                $state.go('articles.edit', {
+                    articleId: $stateParams.articleId
+                }, {
+                    reload: false,
+                    notify: true
+                });
+            }
+        };
 
-		$scope.edit = function() {
-			if ($state.current.name === 'main') {
-				$state.go('main.edit', {}, { reload: false, notify: true });
-			} else {
-				$state.go('articles.edit', { articleId: $stateParams.articleId }, { reload: false, notify: true });
-			}
-		};
+        $scope.save = function() {
+            $rootScope.$broadcast('clickedSave');
+        };
 
-		$scope.save = function() {
-			$rootScope.$broadcast('clickedSave');
-		};
+        $scope.cancel = function() {
+            if (['main.edit', 'articles.create'].indexOf($state.current.name) > -1) {
+                $state.go('main');
+            } else {
+                $state.go('articles.view', {
+                    articleId: $stateParams.articleId
+                }, {
+                    reload: false,
+                    notify: true
+                });
+            }
+        };
 
-		$scope.cancel = function() {
-			if (['main.edit', 'articles.create'].indexOf($state.current.name) > -1) {
-				$state.go('main');
-			}
-			else {
-				$state.go('articles.view', { articleId: $stateParams.articleId }, { reload: false, notify: true });
-			}
-		};
+        $scope.remove = function() {
+            $rootScope.$broadcast('clickedRemove');
+        };
 
-		$scope.remove = function()  {
-			$rootScope.$broadcast('clickedRemove');
-		};
-
-	}
+    }
 ]);
-
 'use strict';
 
 // Create the contenteditable directive
@@ -708,98 +662,64 @@ angular.module('core').service('Socket', ['Authentication', '$state', '$timeout'
 
 // Setting up route
 angular.module('tags').config(['$stateProvider',
-	function($stateProvider) {
-		// Articles state routing
-		$stateProvider.
-		state('tags', {
-			abstract: true,
-			url: '/tags',
-			template: '<ui-view/>'
-		}).
-		state('tags.list', {
-			url: '',
-			templateUrl: 'modules/tags/views/list-tags.client.view.html'
-		}).
-		state('tags.create', {
-			url: '/create',
-			templateUrl: 'modules/tags/views/view-tag.client.view.html'
-		}).
-		state('tags.view', {
-			url: '/:tagId',
-			templateUrl: 'modules/tags/views/view-tag.client.view.html'
-		}).
-		state('tags.edit', {
-			url: '/:tagId/edit',
-			templateUrl: 'modules/tags/views/view-tag.client.view.html'
-		});
-	}
+    function($stateProvider) {
+        // Articles state routing
+        $stateProvider.
+        state('tags', {
+            abstract: true,
+            url: '/tags',
+            template: '<ui-view/>'
+        }).
+        state('tags.list', {
+            url: '',
+            templateUrl: 'modules/tags/views/list-tags.client.view.html'
+        });
+    }
 ]);
-
 'use strict';
+/* global _: false */
 
-angular.module('tags').controller('TagsController', ['$scope', '$rootScope', '$state', '$stateParams', '$location', 'Authentication', 'Tags',
-	function($scope, $rootScope, $state, $stateParams, $location, Authentication, Tags) {
-		$scope.authentication = Authentication;
+angular.module('tags').controller('TagsController',
+    ["$scope", "$window", "$state", "Authentication", "Tags", function($scope, $window, $state, Authentication, Tags) {
+        $scope.authentication = Authentication;
 
-		function isUnauthorized() {
-			return $scope.authentication.user.roles[0] === 'user';
-		}
+        //allows admin to request tags data from database
+        $scope.find = function() {
+            if ($scope.authentication.user.roles[0] === 'user') {
+                $state.go('main');
+            } else {
+                $scope.tags = Tags.query();
+            }
+        };
 
-		$scope.find = function() {
-			if (isUnauthorized()) {
-				$state.go('main');
-			} else {
-				$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
-				$scope.tags = Tags.query();
-			}
-		};
+        //creates a new tag
+        $scope.create = function() {
+            if ($scope.tag.name) {
+                var tag = new Tags($scope.tag);
+                tag.$save(function(response) {
+                    $scope.tag = null;
+                    $scope.tags.push(response);
+                }, function(errorResponse) {
+                    $scope.error = errorResponse.data.message;
+                });
+            }
+        };
 
-		$scope.isNewPage = function() {
-			return $location.path() === '/tags/create';
-		};
+        //deletes the selected tag
+        $scope.removeTag = function(selected) {
+            var confirmation = $window.prompt('Type DELETE to remove the ' + selected.name + ' ' + selected.type);
+            if (confirmation) {
+                selected.$remove(function() {
+                    var oldTagIndex = _.findIndex($scope.tags, selected);
+                    $scope.tags.splice(oldTagIndex, 1);
+                });
+            }
+        };
 
-		$scope.isEditing = function() {
-			return $location.path().indexOf('edit') >= 0;
-		};
 
-		$scope.create = function() {
-			var tag = new Tags($scope.tag);
-			tag.$save(function(response) {
-				$scope.tag = null;
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
 
-		$scope.save = function() {
-			if ($location.path() === '/tags/create') {
-				$scope.create();
-			}
-			else {
-				$scope.update();
-			}
-		};
-
-		$scope.removeTag = function(selected) {
-			console.log(selected);
-			selected.$remove(function() {
-				console.log('tag removed');
-			});
-		};
-
-		$scope.update = function() {
-			var tag = $scope.tag;
-
-			tag.$update(function() {
-				$location.path('tags/' + tag._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-	}
-]);
-
+    }]
+);
 'use strict';
 
 //Articles service used for communicating with the articles REST endpoints
@@ -915,38 +835,37 @@ angular.module('users').config(['$stateProvider',
 'use strict';
 
 angular.module('users').controller('AuthenticationController', ['$scope', '$http', '$location', 'Authentication',
-	function($scope, $http, $location, Authentication) {
-		$scope.authentication = Authentication;
+    function($scope, $http, $location, Authentication) {
+        $scope.authentication = Authentication;
 
-		// If user is signed in then redirect back home
-		if ($scope.authentication.user) $location.path('/');
+        // If user is signed in then redirect back home
+        if ($scope.authentication.user) $location.path('/wikiHome');
 
-		$scope.signup = function() {
-			$http.post('/api/auth/signup', $scope.credentials).success(function(response) {
-				// If successful we assign the response to the global user model
-				$scope.authentication.user = response;
+        $scope.signup = function() {
+            $http.post('/api/auth/signup', $scope.credentials).success(function(response) {
+                // If successful we assign the response to the global user model
+                $scope.authentication.user = response;
 
-				// And redirect to the index page
-				$location.path('/');
-			}).error(function(response) {
-				$scope.error = response.message;
-			});
-		};
+                // And redirect to the index page
+                $location.path('/wikiHome');
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
+        };
 
-		$scope.signin = function() {
-			$http.post('/api/auth/signin', $scope.credentials).success(function(response) {
-				// If successful we assign the response to the global user model
-				$scope.authentication.user = response;
+        $scope.signin = function() {
+            $http.post('/api/auth/signin', $scope.credentials).success(function(response) {
+                // If successful we assign the response to the global user model
+                $scope.authentication.user = response;
 
-				// And redirect to the index page
-				$location.path('/wikiHome');
-			}).error(function(response) {
-				$scope.error = response.message;
-			});
-		};
-	}
+                // And redirect to the index page
+                $location.path('/wikiHome');
+            }).error(function(response) {
+                $scope.error = response.message;
+            });
+        };
+    }
 ]);
-
 'use strict';
 
 angular.module('users').controller('PasswordController', ['$scope', '$stateParams', '$http', '$location', 'Authentication',

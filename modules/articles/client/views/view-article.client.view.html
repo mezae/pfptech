@@ -1,20 +1,23 @@
 <section data-ng-controller="ArticleController" data-ng-init="findOne()">
+
+	<!-- Article Title -->
 	<div class="page-header article-header">
-		<h1 contenteditable="{{isEditing() || isNewPage()}}" ng-model="article.title"></h1>
+		<h1 contenteditable="{{editing}}" ng-model="article.title"></h1>
 	</div>
+
+	<!-- Article Tags -->
 	<small>
 		<em class="text-muted">
-			<span ng-hide="isEditing() || isNewPage()">
-				{{article.tag ? '#' : ''}}<span>{{article.tag}}</span>
-				{{article.subtag ? '#' : ''}}<span>{{article.subtag}}</span>
-			</span>
-			<form class="form-inline" name="articleTags" ng-show="isEditing() || isNewPage()">
+			
+			<form class="form-inline" name="articleTags" ng-if="editing">
 
+				<!-- Department Options -->
 				<select class="form-control" ng-model="article.department" required>
 					<option value="">department</option>
 					<option ng-repeat="dept in departments" value="{{dept}}">{{dept}}</option>
 				</select>
 
+				<!-- Tag Options -->
 				<select class="form-control" ng-model="article.tag" ng-show="article.tag !== 'new'" ng-disabled="articleTags.$invalid">
 					<option value="">tag</option>
 					<option ng-repeat="tag in tags" ng-if="tag.type === 'tag'" value="{{tag.name}}">{{tag.name}}</option>
@@ -24,6 +27,7 @@
 				<button class="btn btn-link" ng-click="article.tag = ''" ng-if="article.tag === 'new'"><i class="glyphicon glyphicon-remove"></i></button>
 				<button class="btn btn-link" ng-click="createTag('tag')" ng-if="article.tag === 'new'"><i class="glyphicon glyphicon-ok"></i></button>
 
+				<!-- Subtag Options -->
 				<select class="form-control" ng-model="article.subtag" ng-show="article.subtag !== 'new'" ng-disabled="articleTags.$invalid">
 					<option value="">subtag</option>
 					<option ng-repeat="tag in tags" ng-if="tag.type === 'subtag'" value="{{tag.name}}">{{tag.name}}</option>
@@ -34,15 +38,27 @@
 				<button class="btn btn-link" ng-click="createTag('subtag')" ng-if="article.subtag === 'new'"><i class="glyphicon glyphicon-ok"></i></button>
 
 			</form>
+
+			<span ng-if="!editing">
+				{{article.tag ? '#' : ''}}<span>{{article.tag}}</span>
+				{{article.subtag ? '#' : ''}}<span>{{article.subtag}}</span>
+			</span>
+
+			<!-- Last Contributor -->
 			<div>
 				<i class="glyphicon glyphicon-time"></i>
-				<span ng-hide="isEditing() || isNewPage()">last modified by {{article.user.displayName}} on {{article.updated | date: 'mediumDate'}}</span>
-				<span ng-show="isEditing() || isNewPage()">you are currently editing this page</span>
+				<span ng-if="editing">you are currently editing this page</span>
+				<span ng-if="!editing">last modified by {{article.user.displayName}} on {{article.updated | date: 'mediumDate'}}</span>
 			</div>
+
 		</em>
 	</small>
-	<div ng-if="isEditing() || isNewPage()">
+
+	<!-- Article Content -->
+	<div ng-if="editing">
 		<textarea ckeditor="editorOptions" ng-model="article.content">{{article.content}}</textarea>
 	</div>
-	<p class="lead" ng-bind-html="article.content" ng-hide="isEditing() || isNewPage()"></p>
+
+	<p ng-if="!editing" class="lead" ng-bind-html="article.content"></p>
+
 </section>

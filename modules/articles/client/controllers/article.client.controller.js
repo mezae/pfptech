@@ -1,102 +1,110 @@
 'use strict';
 
-angular.module('articles').controller('ArticleController', ['$scope', '$rootScope', '$window', '$stateParams', '$location', 'Authentication', 'Articles', 'Tags', '$sce',
-	function($scope, $rootScope, $window, $stateParams, $location, Authentication, Articles, Tags, $sce) {
-		$scope.authentication = Authentication;
+angular.module('articles').controller('ArticleController', ['$scope', '$state', '$window', '$stateParams', 'Authentication', 'Articles', 'Tags', '$sce',
+    function($scope, $state, $window, $stateParams, Authentication, Articles, Tags, $sce) {
+        $scope.authentication = Authentication;
 
-		$scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
+        $scope.departments = ['General', 'Academic Programs', 'Admissions', 'Counseling', 'Executive Office', 'External Affairs', 'Finance and Administration', 'Leadership Development Opportunities', 'Smart Connections', 'Undergraduate Affairs'];
 
-		$scope.$on('clickedSave', function () {
-				$scope.save();
-		});
+        //when user clicks the check mark on sidebar
+        $scope.$on('clickedSave', function() {
+            if ($state.current.name === 'articles.create') {
+                create();
+            } else {
+                update();
+            }
+        });
 
-		$scope.$on('clickedRemove', function () {
-				$scope.remove();
-		});
+        //when user clicks the x on sidebar
+        $scope.$on('clickedRemove', function() {
+            remove();
+        });
 
-		$scope.isNewPage = function() {
-			return $location.path() === '/articles/create';
-		};
+        //helps browser know what to show as user jumps to/from editing mode
+        $scope.$on('$stateChangeSuccess', function() {
+            $scope.editing = ['articles.create', 'articles.edit'].indexOf($state.current.name) > -1;
+        });
 
-		$scope.isEditing = function() {
-			return $location.path().indexOf('edit') >= 0;
-		};
+        //requests tags and article data from database
+        $scope.findOne = function() {
+            $scope.tags = Tags.query();
+            $scope.newtag = {
+                name: '',
+                type: ''
+            };
+            $scope.editorOptions = {
+                language: 'en',
+                uiColor: '#FFFFFF'
+            };
+            if ($stateParams.articleId) {
+                $scope.article = Articles.get({
+                    articleId: $stateParams.articleId
+                });
+                $scope.safecontent = $sce.trustAsHtml($scope.article.content);
+            } else {
+                $scope.article = {
+                    title: 'title',
+                    content: 'content',
+                    tag: ''
+                };
+            }
+        };
 
-		$scope.create = function() {
-			if(this.articleTags.$valid) {
-				var article = new Articles($scope.article);
-				article.$save(function(response) {
-					$scope.article = response;
-					$location.path('articles/' + response._id);
-				}, function(errorResponse) {
-					$scope.error = errorResponse.data.message;
-				});
-			} else {
-				alert('Please tag this article.');
-			}
-		};
+        //creates a new article if it has been properly tagged
+        function create() {
+            if ($scope.articleTags.$valid) {
+                var article = new Articles($scope.article);
+                article.$save(function(response) {
+                    $scope.article = response;
+                    $state.go('articles.view', {
+                        articleId: article._id
+                    });
+                }, function(errorResponse) {
+                    $scope.error = errorResponse.data.message;
+                });
+            } else {
+                alert('Please tag this article.');
+            }
+        }
 
-		$scope.save = function() {
-			if ($location.path() === '/articles/create') {
-				$scope.create();
-			}
-			else {
-				$scope.update();
-			}
-		};
+        //deletes the current article
+        function remove() {
+            var confirmation = $window.prompt('Type DELETE to wipe this article out of existence.');
+            if (confirmation === 'DELETE') {
+                var article = $scope.article;
+                article.$remove(function() {
+                    $state.go('articles.list');
+                });
+            }
+        }
 
-		$scope.remove = function() {
-			var confirmation = $window.prompt('Type DELETE to remove this article forever.');
-			if (confirmation === 'DELETE') {
-				var article = $scope.article;
-				article.$remove(function() {
-					$location.path('articles');
-				});
-			}
-		};
+        //saves changes to the current article
+        function update() {
+            var article = $scope.article;
+            article.$update(function() {
+                $state.go('articles.view', {
+                    articleId: article._id
+                }, {
+                    reload: false,
+                    notify: true
+                });
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        }
 
-		$scope.update = function() {
-			var article = $scope.article;
+        //allows all users to create new tags on the spot
+        $scope.createTag = function(type) {
+            $scope.newtag.type = type;
+            var tag = new Tags($scope.newtag);
+            tag.$save(function(response) {
+                $scope.tags.push(response);
+                $scope.article[$scope.newtag.type] = response.name;
+                $scope.newtag = null;
+            }, function(errorResponse) {
+                $scope.error = errorResponse.data.message;
+            });
+        };
 
-			article.$update(function() {
-				$location.path('articles/' + article._id);
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-		$scope.findOne = function() {
-			$scope.tags = Tags.query();
-			$scope.newtag = {name: '', type: ''};
-			$scope.editorOptions = {
-		    language: 'en',
-		    uiColor: '#FFFFFF'
-			};
-			if($stateParams.articleId) {
-				$scope.article = Articles.get({
-					articleId: $stateParams.articleId
-				});
-				$scope.safecontent = $sce.trustAsHtml($scope.article.content);
-			}
-			else{
-				$scope.article = {
-					title: 'title',
-					content: 'content',
-					tag: ''
-				};
-			}
-		};
-
-		$scope.createTag = function(type) {
-			$scope.newtag.type = type;
-			var tag = new Tags($scope.newtag);
-			tag.$save(function(response) {
-				$scope.tags.push(response);
-				$scope.newtag = null;
-			}, function(errorResponse) {
-				$scope.error = errorResponse.data.message;
-			});
-		};
-
-	}
+    }
 ]);

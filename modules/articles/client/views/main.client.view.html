@@ -1,7 +1,9 @@
 <section data-ng-controller="WikiHomeController" data-ng-init="findHome()">
+
 	<div class="page-header article-header">
 		<h1 contenteditable="{{editing}}" ng-model="article.title"></h1>
 	</div>
+
 	<div ng-if="editing">
 		<small>
 			<em class="text-muted">
@@ -11,5 +13,7 @@
 		</small>
 		<textarea ckeditor="editorOptions" ng-model="article.content">{{article.content}}</textarea>
 	</div>
-	<p class="lead" ng-bind-html="article.content" ng-if="!editing"></p>
+
+	<p ng-if="!editing" class="lead" ng-bind-html="article.content" ></p>
+	
 </section>
