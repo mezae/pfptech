@@ -12,7 +12,7 @@ var _ = require('lodash'),
 	User = mongoose.model('User');
 
 exports.index = function(req, res) {
-	User.find({}, 'username firstName lastName displayName email roles groups').exec(function(err, users) {
+	User.find({}, 'username firstName lastName displayName email roles groups').lean().exec(function(err, users) {
 		if (err) {
 			return res.status(400).send({
 				message: errorHandler.getErrorMessage(err)
