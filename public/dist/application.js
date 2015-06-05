@@ -952,8 +952,8 @@ angular.module('users').controller('SettingsController', ['$scope', '$http', '$l
 ]);
 'use strict';
 
-angular.module('users').controller('ChangePasswordController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('ChangePasswordController', ['$scope', '$http', 'Users', 'Authentication',
+	function($scope, $http, Users, Authentication) {
 		$scope.user = Authentication.user;
 
 		// Change user password
@@ -1046,8 +1046,8 @@ angular.module('users').controller('ChangeProfilePictureController', ['$scope', 
 
 'use strict';
 
-angular.module('users').controller('EditProfileController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('EditProfileController', ['$scope', 'Users', 'Authentication',
+	function($scope, Users, Authentication) {
 		$scope.user = Authentication.user;
 
 		// Update a user profile
@@ -1148,8 +1148,8 @@ angular.module('users').controller('ManageUsersController', ['$scope', '$http', 
 
 'use strict';
 
-angular.module('users').controller('SettingsController', ['$scope', '$http', '$location', 'Users', 'Authentication',
-	function($scope, $http, $location, Users, Authentication) {
+angular.module('users').controller('SettingsController', ['$scope', '$location', 'Users', 'Authentication',
+	function($scope, $location, Users, Authentication) {
 		$scope.user = Authentication.user;
 
 		// If user is not signed in then redirect back home
