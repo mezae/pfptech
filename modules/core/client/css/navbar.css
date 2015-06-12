@@ -4,13 +4,13 @@
 }
 
 .navbar-brand {
-	padding: 10px 10px;
+	font-size: 30px;
+	padding: 15px 10px;
+	color: white;
 }
 
-.desaturate {
-	filter: brightness(0) invert(1);
-	-webkit-filter: brightness(0) invert(1);
-	max-height: 30px;
+.navbar-brand:hover {
+	color: white;
 }
 
 .navbar-nav > li > a {

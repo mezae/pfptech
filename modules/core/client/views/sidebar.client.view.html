@@ -1,22 +1,22 @@
 <div class="sidebar" ng-class="editing ? 'editing' : ''" data-ng-controller="SidebarController" ng-show="user()">
-		<div class="side-con">
-			<div class="sb-main" ng-show="!editing">
-				<a ui-sref="main"><i class="sb-icon glyphicon glyphicon-home"></i></a>
-				<a ui-sref="articles.list"><i class="sb-icon glyphicon glyphicon-book"></i></a>
-				<a ui-sref="tags.list" ng-if="isAdmin()"><i class="sb-icon glyphicon glyphicon-tags"></i></a>
-				<a ui-sref="articles.create"><i class="sb-icon glyphicon glyphicon-plus"></i></a>
-				<a ng-click="edit()" ng-show="isActive('articles.view') || isActive('main') && isAdmin()">
-					<i class="sb-icon glyphicon glyphicon-pencil"></i>
-				</a>
-			</div>
-			<div class="sb-edit" ng-show="editing">
-				<a href="" ng-click="save()"><i class="sb-icon glyphicon glyphicon-ok"></i></a>
-				<a href="" ng-click="cancel()"><i class="sb-icon glyphicon glyphicon-remove"></i></a>
-				<a href="" ng-click="remove()" ng-show="isActive('articles.edit') && isAdmin()"><i class="sb-icon glyphicon glyphicon-trash"></i></a>
-			</div>
+	<div class="side-con">
+		<div class="sb-main" ng-show="!editing">
+			<a ui-sref="main"><i class="sb-icon glyphicon glyphicon-home"></i></a>
+			<a ui-sref="articles.list"><i class="sb-icon glyphicon glyphicon-book"></i></a>
+			<a ui-sref="tags.list" ng-if="isAdmin()"><i class="sb-icon glyphicon glyphicon-tags"></i></a>
+			<a ui-sref="articles.create"><i class="sb-icon glyphicon glyphicon-plus"></i></a>
+			<a ng-click="edit()" ng-show="isActive('articles.view') || isActive('main') && isAdmin()">
+				<i class="sb-icon glyphicon glyphicon-pencil"></i>
+			</a>
 		</div>
-		<div class="sb-bottom">
-			<a href="" ng-click="redirect('settings.profile')"><i class="sb-icon glyphicon glyphicon-cog"></i></a>
-			<a href="/api/auth/signout" target="_self"><i class="sb-icon glyphicon glyphicon-log-out"></i></a>
+		<div class="sb-edit" ng-show="editing">
+			<a href="" ng-click="save()"><i class="sb-icon glyphicon glyphicon-ok"></i></a>
+			<a href="" ng-click="cancel()"><i class="sb-icon glyphicon glyphicon-remove"></i></a>
+			<a href="" ng-click="remove()" ng-show="isActive('articles.edit') && isAdmin()"><i class="sb-icon glyphicon glyphicon-trash"></i></a>
 		</div>
+	</div>
+	<div class="sb-bottom">
+		<a href="" ng-click="redirect('settings.profile')"><i class="sb-icon glyphicon glyphicon-cog"></i></a>
+		<a href="/api/auth/signout" target="_self"><i class="sb-icon glyphicon glyphicon-log-out"></i></a>
+	</div>
 </div>
