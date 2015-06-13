@@ -24,12 +24,12 @@
 	<link href="/modules/core/img/brand/favicon.ico" rel="shortcut icon" type="image/x-icon">
 
 	<!--Application CSS Files-->
-	{% for cssFile in cssFiles %}<link rel="stylesheet" href="{{cssFile}}">{% endfor %}
 	{% if process.env.NODE_ENV === 'production' %}
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
 	{% endif %}
 	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	{% for cssFile in cssFiles %}<link rel="stylesheet" href="{{cssFile}}">{% endfor %}
 
 	<!-- HTML5 Shim -->
 	<!--[if lt IE 9]>
@@ -41,9 +41,7 @@
 	<header data-ng-include="'/modules/core/views/header.client.view.html'"></header>
 	<div data-ng-include="'/modules/core/views/sidebar.client.view.html'"></div>
 	<div class="content">
-		<div class="container">
-			{% block content %}{% endblock %}
-		</div>
+		{% block content %}{% endblock %}
 	</div>
 
 	<!--Embedding The User Object-->
